@@ -540,25 +540,32 @@ class Projection extends Component {
         this.addPoints()
         this.addSelectedPoints()
       })
-      // } else if (prevProps.loaded_embedding !== this.props.loaded_embedding) {
+    } else if (prevProps.loaded_embedding !== this.props.loaded_embedding) {
       //   // embeddings have changed
-      //   let prevd = decodeS(prevProps.loaded_embedding)
-      //   let d = decodeS(this.props.loaded_embedding)
-      //   if (prevd.dataset !== d.dataset) {
-      //     // different dataset
-      //     console.log('different dataset')
-      //     this.addPoints()
-      //   } else if (prevd.strategy !== d.strategy) {
-      //     // new strategy, we should transition
-      //     if (this.props.transition_status === 1) {
-      //       // this.labelSelected()
-      //     }
-      //     console.log('different strategy')
-      //     this.transitionPoints(prevProps.loaded_embedding)
-      //   } else if (prevd.round !== d.round) {
-      //     console.log('different round')
-      //     // this.transitionPoints(prevProps.loaded_embedding)
-      //   }
+      let prevd = decodeS(prevProps.loaded_embedding)
+      let d = decodeS(this.props.loaded_embedding)
+      if (prevd.dataset !== d.dataset) {
+        // different dataset
+        console.log('different dataset')
+        // this.addPoints()
+      } else if (prevd.strategy !== d.strategy) {
+        // new strategy, we should transition
+        // if (this.props.transition_status === 1) {
+        // this.labelSelected()
+        // }
+        this.transitionPoints(
+          this.props.loaded_embedding,
+          this.props.embeddings
+        )
+      } else if (
+        prevd.round !== d.round &&
+        this.props.transition_status !== 1.5
+      ) {
+        this.transitionPoints(
+          this.props.loaded_embedding,
+          this.props.embeddings
+        )
+      }
     } else if (
       this.props.transition_status === 0.5 &&
       prevProps.transition_status === 0
@@ -575,13 +582,7 @@ class Projection extends Component {
       prevProps.transition_status === 2
     ) {
       this.transitionPoints(this.props.loaded_embedding, this.props.embeddings)
-    } else if (
-      this.props.round !== prevProps.round &&
-      this.props.transition_status !== 1.5
-    ) {
-      console.log('new round')
-      this.transitionPoints(this.props.loaded_embedding, this.props.embeddings)
-    } else if (this.props.strategy !== prevProps.strategy) {
+    } else if (this.props.round !== prevProps.round) {
     }
   }
 

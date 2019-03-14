@@ -4,7 +4,14 @@ import * as _ from 'lodash'
 import * as d3 from 'd3'
 
 let datasets = ['MNIST', 'Quickdraw', 'Caltech']
-let strategies = ['random', 'entropy', 'dropout', 'ensemble']
+let strategies = ['random', 'entropy', 'deepfool', 'ensemble']
+
+let mnist_strategy_url = [
+  'mnist_random_round',
+  'mnist_entropy_round',
+  'mnist_deepfool_round',
+  'mnist_ensemble_entropy_round',
+]
 
 function es(dataset, strategy, round) {
   return `${dataset}-${strategy}-${round}`
@@ -37,7 +44,7 @@ class Data extends Component {
   }
 
   selectDataset(index) {
-    this.setState({ dataset: datasets[index] })
+    this.setState({ dataset: datasets[index], strategy_explored: 0 })
     this.checkOrFetchData(
       datasets[index],
       this.state.strategy,
@@ -46,7 +53,7 @@ class Data extends Component {
   }
 
   selectStrategy(index) {
-    this.setState({ strategy: strategies[index], strategy_explored: 0 })
+    this.setState({ strategy: strategies[index] })
     this.checkOrFetchData(
       this.state.dataset,
       strategies[index],
@@ -80,7 +87,9 @@ class Data extends Component {
   }
 
   fetchData(dataset, strategy, round) {
-    let url = `${process.env.PUBLIC_URL}/mnist_entropy_round${round}.json`
+    let url = `${process.env.PUBLIC_URL}/${
+      mnist_strategy_url[strategies.indexOf(strategy)]
+    }${round}.json`
     fetch(url)
       .then(response => response.json())
       .then(r => {

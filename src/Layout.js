@@ -183,6 +183,7 @@ class Layout extends Component {
               background: 'red',
               padding: grem / 2,
               zIndex: 999,
+              display: 'none',
             }}
           >
             {transition_status}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { comma, drawLine, toPercent2 } from './Utils'
-import { results } from './mnist_entropy_accuracy.js'
+import { mnist } from './mnist_strategies.js'
 import Canvas from './Canvas'
 import * as chroma from 'chroma-js'
 import * as _ from 'lodash'
@@ -52,15 +52,21 @@ class Accuracy extends Component {
       transition_status,
       strategy_explored,
     } = this.props
+
+    let results = mnist[strategy]
+
     height = height - grem * 2
     if (transition_status === 3) round = round + 1
     let ctx = this.ctx
-    let point_size = 6
+    let point_size = 4
     // let x_padding = point_size
     let cell_num = 8
     let cell_width = 100
     let x_padding = cell_width / 2
-    let rounded_min = Math.floor(_.min(results.accuracy) * 10) / 10
+
+    let all_strat_results = strategies.map(s => _.min(mnist[s].accuracy))
+
+    let rounded_min = Math.floor(_.min(all_strat_results) * 10) / 10
 
     let rounds_limit = strategy_explored
 
@@ -85,7 +91,44 @@ class Accuracy extends Component {
       ctx.stroke()
     }
 
-    ctx.lineWidth = 3
+    let non_active_strats = strategies.filter(s => s !== strategy)
+
+    for (let strat of non_active_strats) {
+      let these_results = mnist[strat]
+
+      ctx.lineWidth = 2
+      ctx.strokeStyle = '#666'
+      ctx.fillStyle = '#666'
+      ctx.beginPath()
+      for (let i = 0; i < strategy_explored + 1; i++) {
+        let accuracy =
+          (these_results.accuracy[i] - rounded_min) / (1 - rounded_min)
+        drawLine(
+          ctx,
+          i * cell_width + x_padding,
+          height - accuracy * height + y_padding,
+          i === 0
+        )
+      }
+      ctx.stroke()
+      for (let i = 0; i < strategy_explored + 1; i++) {
+        let accuracy =
+          (these_results.accuracy[i] - rounded_min) / (1 - rounded_min)
+        ctx.beginPath()
+        ctx.arc(
+          i * cell_width + x_padding,
+          height - accuracy * height + y_padding,
+          point_size,
+          0,
+          2 * Math.PI
+        )
+        ctx.fill()
+      }
+    }
+
+    point_size = 6
+
+    ctx.lineWidth = 2
     ctx.strokeStyle = '#efefef'
     ctx.fillStyle = '#efefef'
     ctx.beginPath()
@@ -125,6 +168,9 @@ class Accuracy extends Component {
       adjusted_round,
       strategy_explored,
     } = this.props
+
+    let results = mnist[strategy]
+
     let label_round = round
     let cell_width = 100
     if (transition_status > 1) label_round = round + 1
