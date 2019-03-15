@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "215eb3f79ee28020f926",
+    "revision": "1b3b16553fdb2f31c009",
     "url": "/activelearner/static/css/main.b72a7072.chunk.css"
   },
   {
-    "revision": "215eb3f79ee28020f926",
-    "url": "/activelearner/static/js/main.215eb3f7.chunk.js"
+    "revision": "1b3b16553fdb2f31c009",
+    "url": "/activelearner/static/js/main.1b3b1655.chunk.js"
   },
   {
     "revision": "edd9ed0ec8c284950c4e",
@@ -32,23 +32,23 @@ self.__precacheManifest = [
     "url": "/activelearner/static/media/IBMPlexMono-Italic.e013d7fb.woff2"
   },
   {
-    "revision": "e497c7d84d1cd863756c67d4772e18de",
-    "url": "/activelearner/static/media/IBMPlexMono-Bold.e497c7d8.woff"
-  },
-  {
     "revision": "3bbb37eb2e29eed031eaaf63664b21aa",
     "url": "/activelearner/static/media/IBMPlexMono-Regular.3bbb37eb.woff"
   },
   {
-    "revision": "cb143f1453de62a6febc058dfc352f0f",
-    "url": "/activelearner/static/media/IBMPlexMono-Italic.cb143f14.woff"
+    "revision": "e497c7d84d1cd863756c67d4772e18de",
+    "url": "/activelearner/static/media/IBMPlexMono-Bold.e497c7d8.woff"
   },
   {
     "revision": "0cc0d044dbb4bff360916bceb8f288d0",
     "url": "/activelearner/static/media/IBMPlexMono-BoldItalic.0cc0d044.woff"
   },
   {
-    "revision": "f13590ef49ce50e20fed9da8e235d42f",
+    "revision": "cb143f1453de62a6febc058dfc352f0f",
+    "url": "/activelearner/static/media/IBMPlexMono-Italic.cb143f14.woff"
+  },
+  {
+    "revision": "2256a3fec0080f374cab2848c03d4a74",
     "url": "/activelearner/index.html"
   }
 ];

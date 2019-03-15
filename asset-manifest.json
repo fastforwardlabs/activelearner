@@ -1,14 +1,14 @@
 {
   "main.css": "/activelearner/static/css/main.b72a7072.chunk.css",
-  "main.js": "/activelearner/static/js/main.215eb3f7.chunk.js",
-  "main.js.map": "/activelearner/static/js/main.215eb3f7.chunk.js.map",
+  "main.js": "/activelearner/static/js/main.1b3b1655.chunk.js",
+  "main.js.map": "/activelearner/static/js/main.1b3b1655.chunk.js.map",
   "static/js/1.edd9ed0e.chunk.js": "/activelearner/static/js/1.edd9ed0e.chunk.js",
   "static/js/1.edd9ed0e.chunk.js.map": "/activelearner/static/js/1.edd9ed0e.chunk.js.map",
   "runtime~main.js": "/activelearner/static/js/runtime~main.a8f42ebc.js",
   "runtime~main.js.map": "/activelearner/static/js/runtime~main.a8f42ebc.js.map",
-  "static/media/index.css": "/activelearner/static/media/IBMPlexMono-BoldItalic.0cc0d044.woff",
+  "static/media/index.css": "/activelearner/static/media/IBMPlexMono-Italic.cb143f14.woff",
   "static/css/main.b72a7072.chunk.css.map": "/activelearner/static/css/main.b72a7072.chunk.css.map",
   "index.html": "/activelearner/index.html",
-  "precache-manifest.3abb6a05fdb15e247a644ec773f8f66f.js": "/activelearner/precache-manifest.3abb6a05fdb15e247a644ec773f8f66f.js",
+  "precache-manifest.b2ccd18d984807381db2ece7000715be.js": "/activelearner/precache-manifest.b2ccd18d984807381db2ece7000715be.js",
   "service-worker.js": "/activelearner/service-worker.js"
 }
