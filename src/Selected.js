@@ -78,6 +78,8 @@ class Selected extends Component {
       loaded_embedding,
       transition_status,
       header_height,
+      round,
+      round_limit,
     } = this.props
 
     let selected_indexes = []
@@ -116,6 +118,10 @@ class Selected extends Component {
 
     let scale = image_width / sprite_image_size
 
+    let adjusted_round = round
+    if (transition_status > 1 && transition_status < 2.3)
+      adjusted_round = Math.max(0, adjusted_round - 1)
+
     return (
       <div
         style={{
@@ -147,7 +153,11 @@ class Selected extends Component {
         <div
           style={{
             opacity:
-              transition_status === 0 || transition_status === 2.6 ? 0 : 1,
+              transition_status === 0 ||
+              transition_status === 2.6 ||
+              round_limit === adjusted_round
+                ? 0
+                : 1,
             transition: 'opacity 0.4s linear',
             padding: grem / 2,
             position: 'relative',
@@ -165,7 +175,7 @@ class Selected extends Component {
               padding: `${grem / 4}px ${grem / 2}px`,
             }}
           >
-            <div>Selected:</div>
+            <div>{transition_status < 2 ? 'Selected' : 'Labeled'}:</div>
             <div>1,000</div>
           </div>
           <div
@@ -200,7 +210,7 @@ class Selected extends Component {
                       this.state.labels !== null &&
                       this.props.transition_status > 1.5
                         ? status_to_color[this.state.labels[i]]
-                        : '#bbb'
+                        : '#fff'
                     return (
                       <div
                         style={{

@@ -23,6 +23,7 @@ class ProjectionSelected extends Component {
       header_height,
       footer_height,
       round,
+      round_limit,
     } = this.props
 
     let selected_width = 200
@@ -58,6 +59,8 @@ class ProjectionSelected extends Component {
             ranges={ranges}
             transition_status={transition_status}
             header_height={header_height}
+            round={round}
+            round_limit={round_limit}
           />
         ) : null}
       </div>

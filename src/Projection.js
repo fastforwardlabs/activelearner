@@ -304,7 +304,7 @@ class Projection extends Component {
       let end_flattened = prepPositions(sel_end_position_prep)
       let sel_end_position = new Float32Array(end_flattened)
 
-      let size = { value: 30 }
+      let size = { value: 20 }
       let end_size = { value: 0 }
       let me = this
       let size_tween = new TWEEN.Tween(size)
@@ -315,7 +315,7 @@ class Projection extends Component {
           // hack to just run once
           if (s === 0) {
             me.addSelectedPoints()
-            me.props.setTransitionStatus(0)
+            me.props.setTransitionStatus(0.5)
           }
         })
       size_tween.onUpdate(function() {
@@ -333,7 +333,6 @@ class Projection extends Component {
         if (s === 0) {
           setTimeout(() => {
             me.addPoints()
-
             if (existing.material.uniforms.size.value > 0) {
               me.props.setTransitionStatus(2.6)
             } else {
@@ -468,7 +467,7 @@ class Projection extends Component {
 
   revealSelected() {
     let size = { value: 0 }
-    let end_size = { value: 30 }
+    let end_size = { value: 20 }
     let groups = this.scene.children[1].children
     for (let g = 0; g < groups.length; g++) {
       let points = groups[g]
@@ -486,12 +485,31 @@ class Projection extends Component {
       })
       size_tween.start()
     }
+
+    // let opacity = { value: 0 }
+    // let end_opacity = { value: 1 }
+    // for (let g = 0; g < groups.length; g++) {
+    //   let points = groups[g]
+    //   points.material.uniforms.size = { value: 20 }
+    //   let opacity_tween = new TWEEN.Tween(opacity)
+    //     .to(end_opacity, 800)
+    //     .easing(TWEEN.Easing.Linear.None)
+    //   opacity_tween.onUpdate(function() {
+    //     console.log(opacity.value)
+    //     points.material.opacity = opacity.value
+    //   })
+    //   let me = this
+    //   opacity_tween.onComplete(function() {
+    //     if (g === 0) {
+    //       me.props.setTransitionStatus(1)
+    //     }
+    //   })
+    //   opacity_tween.start()
+    // }
   }
 
   labelSelected() {
     let { loaded_embedding, embeddings } = this.props
-
-    console.log(loaded_embedding)
 
     let loaded = embeddings[loaded_embedding]
 
@@ -525,6 +543,14 @@ class Projection extends Component {
         points.geometry.attributes.color.array = start_colors
         points.geometry.attributes.color.needsUpdate = true
       })
+      let me = this
+      color_tween.onComplete(function() {
+        if (s === 0) {
+          setTimeout(function() {
+            me.props.setTransitionStatus(2.3)
+          }, 0)
+        }
+      })
       color_tween.start()
     }
   }
@@ -539,6 +565,7 @@ class Projection extends Component {
         this.textures = textures
         this.addPoints()
         this.addSelectedPoints()
+        this.props.setTransitionStatus(0.5)
       })
     } else if (prevProps.loaded_embedding !== this.props.loaded_embedding) {
       //   // embeddings have changed
@@ -567,8 +594,10 @@ class Projection extends Component {
         )
       }
     } else if (
-      this.props.transition_status === 0.5 &&
-      prevProps.transition_status === 0
+      (this.props.transition_status === 0.5 &&
+        prevProps.transition_status === 0) ||
+      (this.props.transition_status === 0.5 &&
+        prevProps.transition_status === 2.6)
     ) {
       this.revealSelected()
     } else if (

@@ -7,22 +7,22 @@ class BigButton extends Component {
     let button_text
     let next_state
     if (transition_status === 0) {
-      button_text = 'Select data'
-      next_state = 0.5
+      button_text = 'Loading...'
+      next_state = null
     } else if (transition_status === 0.5) {
       button_text = 'Selecting...'
       next_state = null
     } else if (transition_status === 1) {
-      button_text = 'Get labels'
+      button_text = 'Label & train'
       next_state = 1.5
     } else if (transition_status === 1.5) {
       button_text = 'Labeling...'
       next_state = null
     } else if (transition_status === 2) {
-      button_text = 'Retrain model'
-      next_state = 2.3
+      button_text = 'Training...'
+      next_state = null
     } else if (transition_status === 2.3) {
-      button_text = 'Retraining...'
+      button_text = 'Training...'
       next_state = null
     } else if (transition_status === 2.6) {
       button_text = 'Deselecting...'

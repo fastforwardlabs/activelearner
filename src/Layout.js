@@ -180,9 +180,9 @@ class Layout extends Component {
               position: 'fixed',
               top: 0,
               right: 0,
-              background: 'red',
               padding: grem / 2,
               zIndex: 999,
+              background: 'red',
               display: 'none',
             }}
           >
@@ -213,6 +213,7 @@ class Layout extends Component {
                 footer_height={footer_height}
                 round={round}
                 header_height={header_height}
+                round_limit={round_limit}
               />
             </div>
           ) : null}
