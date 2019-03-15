@@ -4,12 +4,12 @@ import * as _ from 'lodash'
 import * as d3 from 'd3'
 
 let datasets = ['MNIST', 'Quickdraw', 'Caltech']
-let strategies = ['random', 'entropy', 'deepfool', 'ensemble']
+let strategies = ['random', 'entropy', 'adversarial', 'ensemble']
 
 let mnist_strategy_url = [
   'mnist_random_round',
   'mnist_entropy_round',
-  'mnist_deepfool_round',
+  'mnist_adv_round',
   'mnist_ensemble_entropy_round',
 ]
 
