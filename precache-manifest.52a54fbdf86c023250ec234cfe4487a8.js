@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "a04d73816d922aadeca8",
+    "revision": "3624ef2bb92a0dfc0b3e",
     "url": "/activelearner/static/css/main.b72a7072.chunk.css"
   },
   {
-    "revision": "a04d73816d922aadeca8",
-    "url": "/activelearner/static/js/main.a04d7381.chunk.js"
+    "revision": "3624ef2bb92a0dfc0b3e",
+    "url": "/activelearner/static/js/main.3624ef2b.chunk.js"
   },
   {
     "revision": "563966fb80cd34d5a217",
@@ -16,16 +16,16 @@ self.__precacheManifest = [
     "url": "/activelearner/static/js/runtime~main.a8f42ebc.js"
   },
   {
+    "revision": "e013d7fb192edf9a162083034de4c4dc",
+    "url": "/activelearner/static/media/IBMPlexMono-Italic.e013d7fb.woff2"
+  },
+  {
     "revision": "c7832ed5479c8b9eb5c4733047ecacbd",
     "url": "/activelearner/static/media/IBMPlexMono-Regular.c7832ed5.woff2"
   },
   {
     "revision": "0fe304ab4da57c0d18ae803661491d58",
     "url": "/activelearner/static/media/IBMPlexMono-Bold.0fe304ab.woff2"
-  },
-  {
-    "revision": "e013d7fb192edf9a162083034de4c4dc",
-    "url": "/activelearner/static/media/IBMPlexMono-Italic.e013d7fb.woff2"
   },
   {
     "revision": "4289aa978c126b40c79130726684a5a7",
@@ -36,6 +36,10 @@ self.__precacheManifest = [
     "url": "/activelearner/static/media/IBMPlexMono-Bold.e497c7d8.woff"
   },
   {
+    "revision": "3bbb37eb2e29eed031eaaf63664b21aa",
+    "url": "/activelearner/static/media/IBMPlexMono-Regular.3bbb37eb.woff"
+  },
+  {
     "revision": "0cc0d044dbb4bff360916bceb8f288d0",
     "url": "/activelearner/static/media/IBMPlexMono-BoldItalic.0cc0d044.woff"
   },
@@ -44,11 +48,7 @@ self.__precacheManifest = [
     "url": "/activelearner/static/media/IBMPlexMono-Italic.cb143f14.woff"
   },
   {
-    "revision": "3bbb37eb2e29eed031eaaf63664b21aa",
-    "url": "/activelearner/static/media/IBMPlexMono-Regular.3bbb37eb.woff"
-  },
-  {
-    "revision": "6da2849994084c447b55adcf71b516d8",
+    "revision": "c817e4441d98e57dc2a8af2bfd9f7e40",
     "url": "/activelearner/index.html"
   }
 ];
