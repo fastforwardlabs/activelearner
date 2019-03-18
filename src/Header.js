@@ -95,6 +95,7 @@ class Header extends Component {
                   ))
               return (
                 <span
+                  key={n}
                   style={{
                     padding: `0 ${grem / 4}px`,
                     background: active ? 'white' : 'transparent',
@@ -134,6 +135,7 @@ class Header extends Component {
                   ))
               return (
                 <span
+                  key={n}
                   style={{
                     padding: `0 ${grem / 4}px`,
                     background: active ? 'white' : 'transparent',

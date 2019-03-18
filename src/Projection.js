@@ -267,9 +267,7 @@ class Projection extends Component {
     this.scene.children[0] = parent_group
   }
 
-  transitionPoints(loaded_embedding, embeddings) {
-    let me = this
-
+  transitionPoints(loaded_embedding, embeddings, transition_colors) {
     let back_points = this.scene.children[0]
     let existing_points = this.scene.children[1].children
     let loaded = embeddings[loaded_embedding]
@@ -283,14 +281,57 @@ class Projection extends Component {
       let start_position = back_existing.geometry.attributes.position.array.slice()
       let end_position = prepPositions(slice.coordinates)
 
-      let position_tween = new TWEEN.Tween(start_position)
-        .to(end_position, 800)
-        .easing(TWEEN.Easing.Linear.None)
-      position_tween.onUpdate(function() {
-        back_existing.geometry.attributes.position.array = start_position
-        back_existing.geometry.attributes.position.needsUpdate = true
-      })
-      position_tween.start()
+      if (true || transition_colors) {
+        let start_colors = back_existing.geometry.attributes.color.array.slice()
+        let color_prep = slice.labels.map(label => {
+          let color = status_to_color[label]
+          return color
+        })
+        let color_flattened = _.flatten(color_prep)
+        let end_colors = new Float32Array(color_flattened)
+
+        let color_tween = new TWEEN.Tween(start_colors)
+          .to(end_colors, 400)
+          .easing(TWEEN.Easing.Linear.None)
+        color_tween.onUpdate(function() {
+          back_existing.geometry.attributes.color.array = start_colors
+          back_existing.geometry.attributes.color.needsUpdate = true
+        })
+        color_tween.delay(400)
+
+        let position_tween = new TWEEN.Tween(start_position)
+          .to(end_position, 800)
+          .easing(TWEEN.Easing.Linear.None)
+        position_tween.onUpdate(function() {
+          back_existing.geometry.attributes.position.array = start_position
+          back_existing.geometry.attributes.position.needsUpdate = true
+        })
+        position_tween.start().chain(color_tween)
+
+        // let combo_tween = new TWEEN.Tween(combo_start)
+        //   .to(combo_end, 800)
+        //   .easing(TWEEN.Easing.Linear.None)
+        // combo_tween.onUpdate(function() {
+        //   if (s === 0) {
+        //     console.log(combo_start.positions[0])
+        //   }
+        //   back_existing.geometry.attributes.color.array = combo_start.colors
+        //   back_existing.geometry.attributes.color.needsUpdate = true
+        //   back_existing.geometry.attributes.position.array =
+        //     combo_start.positions
+        //   back_existing.geometry.attributes.position.needsUpdate = true
+        // })
+        // combo_tween.start()
+      } else {
+        let position_tween = new TWEEN.Tween(start_position)
+          .to(end_position, 800)
+          .easing(TWEEN.Easing.Linear.None)
+        position_tween.onUpdate(function() {
+          back_existing.geometry.attributes.position.array = start_position
+          back_existing.geometry.attributes.position.needsUpdate = true
+        })
+        position_tween.start()
+      }
 
       // selected
       let existing = existing_points[s]
@@ -332,7 +373,6 @@ class Projection extends Component {
       sel_position_tween.onComplete(() => {
         if (s === 0) {
           setTimeout(() => {
-            me.addPoints()
             if (existing.material.uniforms.size.value > 0) {
               me.props.setTransitionStatus(2.6)
             } else {
@@ -463,6 +503,7 @@ class Projection extends Component {
     }
 
     this.scene.children[1] = parent_group
+    // this.scene.children[1].visible = false
   }
 
   revealSelected() {
@@ -577,12 +618,14 @@ class Projection extends Component {
         // this.addPoints()
       } else if (prevd.strategy !== d.strategy) {
         // new strategy, we should transition
+        // new strategy, who dis
         // if (this.props.transition_status === 1) {
         // this.labelSelected()
         // }
         this.transitionPoints(
           this.props.loaded_embedding,
-          this.props.embeddings
+          this.props.embeddings,
+          true
         )
       } else if (
         prevd.round !== d.round &&
@@ -722,6 +765,7 @@ class Projection extends Component {
           </div>
           {color_array_hexes.map((c, i) => (
             <div
+              key={'color_' + i}
               style={{
                 background: color_array_hexes[i],
                 height: grem,

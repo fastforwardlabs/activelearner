@@ -56,16 +56,17 @@ class Selected extends Component {
       }
     }
     if (
-      this.props.transition_status === 0 &&
+      this.props.transition_status === 0.5 &&
       prevProps.transition_status !== 0
     ) {
+      // need to make this run in between
       let me = this
       setTimeout(() => {
         me.setState({
           prev_loaded: this.props.loaded_embedding,
           labels: null,
         })
-      }, 800)
+      }, 0)
     }
   }
 
@@ -159,6 +160,7 @@ class Selected extends Component {
                 ? 0
                 : 1,
             transition: 'opacity 0.4s linear',
+            transitionDelay: '0.1s',
             padding: grem / 2,
             position: 'relative',
           }}
@@ -213,6 +215,7 @@ class Selected extends Component {
                         : '#fff'
                     return (
                       <div
+                        key={p}
                         style={{
                           width: image_width,
                           height: image_height + grem,

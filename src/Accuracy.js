@@ -167,6 +167,7 @@ class Accuracy extends Component {
       transition_status,
       adjusted_round,
       strategy_explored,
+      round_limit,
     } = this.props
 
     let results = mnist[strategy]
@@ -179,7 +180,13 @@ class Accuracy extends Component {
         <div style={{ display: 'inline-flex', pointerEvents: 'auto' }}>
           <div style={{ padding: `0 ${grem / 4}px` }}>
             <div style={{ padding: `0 ${grem / 4}px` }}>
-              {true ? <span>Round {round + 1}</span> : ' '}{' '}
+              {true ? (
+                <span>
+                  Round {round + 1} of {round_limit + 1}
+                </span>
+              ) : (
+                ' '
+              )}{' '}
             </div>
           </div>
           <div style={{ padding: `0 ${grem / 4}px` }}>
@@ -205,6 +212,7 @@ class Accuracy extends Component {
           <>
             {[...Array(strategy_explored + 1)].map((n, i) => (
               <div
+                key={'explored' + i}
                 onClick={() => {
                   this.handleRound(i)
                 }}

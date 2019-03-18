@@ -33,6 +33,7 @@ class Footer extends Component {
       simulating_labeling,
       gradient_string,
       strategy_explored,
+      round_limit,
     } = this.props
 
     let adjusted_round = round
@@ -66,6 +67,7 @@ class Footer extends Component {
           strategy={strategy}
           round={adjusted_round}
           strategy_explored={adjusted_explored}
+          round_limit={round_limit}
         />
       </div>
     )

@@ -257,6 +257,7 @@ class Layout extends Component {
               setTransitionStatus={this.setTransitionStatus}
               simulating_labeling={simulating_labeling}
               strategy_explored={strategy_explored}
+              round_limit={round_limit}
             />
           ) : null}
           {this.state.simulating_labeling ? (
