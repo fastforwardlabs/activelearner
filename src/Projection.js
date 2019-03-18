@@ -345,13 +345,15 @@ class Projection extends Component {
       let end_flattened = prepPositions(sel_end_position_prep)
       let sel_end_position = new Float32Array(end_flattened)
 
+      let size_delay = 1200
+      if (!transition_colors) size_delay = 400
       let size = { value: 20 }
       let end_size = { value: 0 }
       let me = this
       let size_tween = new TWEEN.Tween(size)
         .to(end_size, 400)
         .easing(TWEEN.Easing.Linear.None)
-        .delay(400)
+        .delay(size_delay)
         .onComplete(() => {
           // hack to just run once
           if (s === 0) {
@@ -633,7 +635,8 @@ class Projection extends Component {
       ) {
         this.transitionPoints(
           this.props.loaded_embedding,
-          this.props.embeddings
+          this.props.embeddings,
+          true
         )
       }
     } else if (
