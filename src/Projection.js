@@ -752,34 +752,63 @@ class Projection extends Component {
             position: 'absolute',
             left: 0,
             bottom: this.props.footer_height + grem,
+            pointerEvents: 'none',
           }}
         >
-          <div style={{ padding: `0 ${grem / 4}px` }}>Labels:</div>
           <div
             style={{
-              background: '#888',
-              color: '#111',
-              width: grem,
-              height: grem,
-              textAlign: 'center',
+              display: 'flex',
+              flexWrap: 'auto',
             }}
           >
-            ?
-          </div>
-          {color_array_hexes.map((c, i) => (
+            <div style={{ padding: `0 ${grem / 4}px` }}>Key:</div>
             <div
-              key={'color_' + i}
               style={{
-                background: color_array_hexes[i],
-                height: grem,
-                textAlign: 'center',
+                background: '#888',
                 color: '#111',
-                width: grem,
+                height: grem,
+                padding: `0 ${grem / 2}px`,
+                textAlign: 'center',
               }}
             >
-              {i}
+              unlabeled
             </div>
-          ))}
+            <div
+              style={{
+                background: '#fff',
+                color: '#111',
+                height: grem,
+                padding: `0 ${grem / 2}px`,
+                textAlign: 'center',
+              }}
+            >
+              selected
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: `0 ${grem / 4}px 0 ${grem * 0.75}px`,
+              display: 'flex',
+              flexWrap: 'auto',
+            }}
+          >
+            <div style={{ padding: `0 ${grem / 4}px` }}>Labels:</div>
+            {color_array_hexes.map((c, i) => (
+              <div
+                key={'color_' + i}
+                style={{
+                  background: color_array_hexes[i],
+                  height: grem,
+                  textAlign: 'center',
+                  color: '#111',
+                  width: grem,
+                }}
+              >
+                {i}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )

@@ -9,6 +9,9 @@ let placeholder_arrays = [...Array(4)].map(n =>
   [...Array(5)].map(n => Math.random())
 )
 
+let point_size = 4
+let y_padding = point_size * 2
+
 class Accuracy extends Component {
   constructor(props) {
     super(props)
@@ -226,6 +229,18 @@ class Accuracy extends Component {
                 }}
               />
             ))}
+            <div
+              style={{
+                position: 'absolute',
+                top: y_padding,
+                left: cell_width * (strategy_explored + 1),
+                width: (round_limit - strategy_explored) * cell_width,
+                height: height - grem * 2 - y_padding * 2,
+                border: 'solid 2px rgba(100,100,100,0.2)',
+                borderLeft: 'none',
+                pointerEvents: 'none',
+              }}
+            />
           </>
         </div>
         <div
