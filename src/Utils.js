@@ -41,3 +41,18 @@ export function decodeS(string) {
     round: splits[2],
   }
 }
+
+let labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+let quickdraw_labels = [
+  'dolphin',
+  'cat',
+  'face',
+  'angel',
+  'airplane',
+  'apple',
+  'broccoli',
+  'crayon',
+  'bicycle',
+  'elephant',
+]
+export let label_dict = { MNIST: labels, Quickdraw: quickdraw_labels }

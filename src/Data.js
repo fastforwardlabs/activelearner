@@ -13,6 +13,18 @@ let mnist_strategy_url = [
   'mnist_ensemble_entropy_round',
 ]
 
+let quickdraw_strategy_url = [
+  'quickdraw_random_round',
+  'quickdraw_entropy_round',
+  'quickdraw_adv_round',
+  'quickdraw_ensemble_entropy_round',
+]
+
+let strategy_dict = {
+  [datasets[0]]: mnist_strategy_url,
+  [datasets[1]]: quickdraw_strategy_url,
+}
+
 function es(dataset, strategy, round) {
   return `${dataset}-${strategy}-${round}`
 }
@@ -24,7 +36,7 @@ class Data extends Component {
     super(props)
     this.state = {
       embeddings: {},
-      dataset: datasets[0],
+      dataset: datasets[1],
       strategy: strategies[1],
       round: 0,
       requested_embedding: null,
@@ -44,7 +56,7 @@ class Data extends Component {
   }
 
   selectDataset(index) {
-    this.setState({ dataset: datasets[index], strategy_explored: 0 })
+    this.setState({ dataset: datasets[index], strategy_explored: 0, round: 0 })
     this.checkOrFetchData(
       datasets[index],
       this.state.strategy,
@@ -88,7 +100,7 @@ class Data extends Component {
 
   fetchData(dataset, strategy, round) {
     let url = `${process.env.PUBLIC_URL}/${
-      mnist_strategy_url[strategies.indexOf(strategy)]
+      strategy_dict[dataset][strategies.indexOf(strategy)]
     }${round}.json`
     fetch(url)
       .then(response => response.json())

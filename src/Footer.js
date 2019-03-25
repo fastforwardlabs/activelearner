@@ -34,6 +34,7 @@ class Footer extends Component {
       gradient_string,
       strategy_explored,
       round_limit,
+      dataset,
     } = this.props
 
     let adjusted_round = round
@@ -50,7 +51,7 @@ class Footer extends Component {
         }}
         style={{
           position: 'absolute',
-          bottom: 0,
+          bottom: grem * 2,
           left: 0,
           height: 7 * grem,
           pointerEvents: 'none',
@@ -63,6 +64,7 @@ class Footer extends Component {
           grem={grem}
           strategies={strategies}
           selectRound={this.props.selectRound}
+          dataset={dataset}
           strategy_colors={strategy_colors}
           strategy={strategy}
           round={adjusted_round}

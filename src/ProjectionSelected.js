@@ -24,6 +24,7 @@ class ProjectionSelected extends Component {
       footer_height,
       round,
       round_limit,
+      dataset,
     } = this.props
 
     let selected_width = 200
@@ -44,7 +45,9 @@ class ProjectionSelected extends Component {
           setTransitionStatus={setTransitionStatus}
           loading_round={loading_round}
           footer_height={footer_height}
+          selectRound={this.props.selectRound}
           round={round}
+          dataset={dataset}
         />
         {true ? (
           <Selected
@@ -61,6 +64,7 @@ class ProjectionSelected extends Component {
             header_height={header_height}
             round={round}
             round_limit={round_limit}
+            dataset={dataset}
           />
         ) : null}
       </div>

@@ -202,10 +202,12 @@ class Layout extends Component {
                 strategies={strategies}
                 strategy_colors={strategy_colors}
                 strategy={strategy}
+                dataset={dataset}
                 embeddings={embeddings}
                 requested_embedding={requested_embedding}
                 loaded_embedding={loaded_embedding}
                 loading_round={loading_round}
+                selectRound={this.props.selectRound}
                 mnist_images={mnist_images}
                 ranges={ranges}
                 transition_status={this.state.transition_status}
@@ -258,6 +260,7 @@ class Layout extends Component {
               simulating_labeling={simulating_labeling}
               strategy_explored={strategy_explored}
               round_limit={round_limit}
+              dataset={dataset}
             />
           ) : null}
           {this.state.simulating_labeling ? (

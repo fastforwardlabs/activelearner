@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import { comma, drawLine, toPercent2 } from './Utils'
-import { mnist } from './mnist_strategies.js'
+import { mnist_strategies } from './mnist_strategies.js'
+import { quickdraw_strategies } from './quickdraw_strategies.js'
 import Canvas from './Canvas'
 import * as chroma from 'chroma-js'
 import * as _ from 'lodash'
+
+let strategy_dict = { MNIST: mnist_strategies, Quickdraw: quickdraw_strategies }
 
 let placeholder_arrays = [...Array(4)].map(n =>
   [...Array(5)].map(n => Math.random())
@@ -54,9 +57,11 @@ class Accuracy extends Component {
       grem,
       transition_status,
       strategy_explored,
+      dataset,
     } = this.props
 
-    let results = mnist[strategy]
+    let strategy_accuracy = strategy_dict[dataset]
+    let results = strategy_accuracy[strategy]
 
     height = height - grem * 2
     if (transition_status === 3) round = round + 1
@@ -67,7 +72,9 @@ class Accuracy extends Component {
     let cell_width = 100
     let x_padding = cell_width / 2
 
-    let all_strat_results = strategies.map(s => _.min(mnist[s].accuracy))
+    let all_strat_results = strategies.map(s =>
+      _.min(strategy_accuracy[s].accuracy)
+    )
 
     let rounded_min = Math.floor(_.min(all_strat_results) * 10) / 10
 
@@ -97,7 +104,7 @@ class Accuracy extends Component {
     let non_active_strats = strategies.filter(s => s !== strategy)
 
     for (let strat of non_active_strats) {
-      let these_results = mnist[strat]
+      let these_results = strategy_accuracy[strat]
 
       ctx.lineWidth = 2
       ctx.strokeStyle = '#666'
@@ -171,9 +178,11 @@ class Accuracy extends Component {
       adjusted_round,
       strategy_explored,
       round_limit,
+      dataset,
     } = this.props
 
-    let results = mnist[strategy]
+    let num_labeled = strategy_dict[dataset].num_labeled
+    let results = strategy_dict[dataset][strategy]
 
     let label_round = round
     let cell_width = 100
@@ -252,8 +261,8 @@ class Accuracy extends Component {
           }}
         >
           <div style={{ padding: `0 ${grem / 4}px` }}>
-            100,000 points, {comma(results.num_labeled[label_round])} labelled (
-            {toPercent2(results.num_labeled[label_round] / 1000000)})
+            100,000 points, {comma(num_labeled[label_round])} labelled (
+            {toPercent2(num_labeled[label_round] / 1000000)})
           </div>
         </div>
       </div>

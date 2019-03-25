@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import * as chroma from 'chroma-js'
+import { label_dict } from './Utils'
 
 let image_num = 40
 let images = [...Array(40)].map(n => null)
@@ -16,6 +17,16 @@ let mnist_tile_string = 'mnist_'
 let mnist_tile_locations = [...Array(sprite_number)].map(
   (n, i) => `${process.env.PUBLIC_URL}/${mnist_tile_string}${i}.png`
 )
+
+let quickdraw_tile_string = 'QUICKDRAW_'
+let quickdraw_tile_locations = [...Array(sprite_number)].map(
+  (n, i) => `${process.env.PUBLIC_URL}/${quickdraw_tile_string}${i}.png`
+)
+
+let tile_dict = {
+  MNIST: mnist_tile_locations,
+  Quickdraw: quickdraw_tile_locations,
+}
 
 let color_num = 10
 let status_to_color = [...Array(color_num)].map((n, i) =>
@@ -81,6 +92,7 @@ class Selected extends Component {
       header_height,
       round,
       round_limit,
+      dataset,
     } = this.props
 
     let selected_indexes = []
@@ -94,8 +106,8 @@ class Selected extends Component {
       }
     }
 
-    let grid_columns = 4
-    let gutter = grem / 4
+    let grid_columns = 3
+    let gutter = grem / 2
     let side_padding = grem / 4
     let image_width =
       (width - side_padding * 2 * 2 - gutter * (grid_columns - 1)) /
@@ -198,7 +210,7 @@ class Selected extends Component {
                 paddingBottom: side_padding * 2,
                 gridTemplateColumns: `repeat(${grid_columns}, ${image_width}px)`,
                 gridColumnGap: gutter,
-                gridRowGap: gutter * 2,
+                gridRowGap: gutter,
               }}
             >
               {image_pickers.length > 0
@@ -206,30 +218,30 @@ class Selected extends Component {
                     let label =
                       this.state.labels !== null &&
                       this.props.transition_status > 1.5
-                        ? this.state.labels[i]
-                        : '?'
+                        ? label_dict[dataset][this.state.labels[i]]
+                        : 'selected'
                     let background =
                       this.state.labels !== null &&
                       this.props.transition_status > 1.5
                         ? status_to_color[this.state.labels[i]]
-                        : '#fff'
+                        : '#ddd'
                     return (
                       <div
                         key={p}
                         style={{
                           width: image_width,
-                          height: image_height + grem,
+                          height: image_height + grem - 3,
                           background: background,
                           color: '#111',
                           textAlign: 'center',
                           transition: 'background 400ms linear',
+                          paddingLeft: 3,
+                          paddingTop: 3,
                         }}
                       >
                         <div
                           style={{
-                            backgroundImage: `url(${
-                              mnist_tile_locations[p[0]]
-                            })`,
+                            backgroundImage: `url(${tile_dict[dataset][p[0]]})`,
                             backgroundSize: `${scale *
                               sprite_actual_size}px ${scale *
                               sprite_actual_size}px`,
@@ -238,12 +250,20 @@ class Selected extends Component {
                               sprite_image_size}px -${p[2] *
                               scale *
                               sprite_image_size}px`,
-                            width: image_width,
-                            height: image_height,
+                            width: image_width - 6,
+                            height: image_height - 6,
                             imageRendering: 'pixelated',
                           }}
                         />
-                        <div>{label}</div>
+                        <div
+                          style={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {label}
+                        </div>
                       </div>
                     )
                   })

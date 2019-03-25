@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { decodeS } from './Utils'
+import { decodeS, label_dict } from './Utils'
 import * as THREE from 'three'
 import * as _ from 'lodash'
 import * as d3 from 'd3'
@@ -36,13 +36,45 @@ let sprite_image_size = 28
 // actual sprite size needs to be power of 2
 let sprite_actual_size = 2048
 
+let hover_size = 28 * 3
+let hover_pad = 4
+let hover_bord = 0
+
+let loader = new THREE.TextureLoader()
+let circle_texture = loader.load(`${process.env.PUBLIC_URL}/circle.png`)
+circle_texture.flipY = false
+
 let mnist_tile_string = 'mnist_'
 let mnist_tile_locations = [...Array(sprite_number)].map(
   (n, i) => `${process.env.PUBLIC_URL}/${mnist_tile_string}${i}.png`
 )
-let loader = new THREE.TextureLoader()
-let circle_texture = loader.load(`${process.env.PUBLIC_URL}/circle.png`)
-circle_texture.flipY = false
+
+let quickdraw_tile_string = 'QUICKDRAW_'
+let quickdraw_tile_locations = [...Array(sprite_number)].map(
+  (n, i) => `${process.env.PUBLIC_URL}/${quickdraw_tile_string}${i}.png`
+)
+
+let tile_dict = {
+  MNIST: mnist_tile_locations,
+  Quickdraw: quickdraw_tile_locations,
+}
+
+let mnist_images = mnist_tile_locations.map(src => {
+  let img = document.createElement('img')
+  img.src = src
+  return img
+})
+
+let quickdraw_images = quickdraw_tile_locations.map(src => {
+  let img = document.createElement('img')
+  img.src = src
+  return img
+})
+
+let image_dict = {
+  MNIST: mnist_images,
+  Quickdraw: quickdraw_images,
+}
 
 let ranges = []
 for (let i = 0; i < sprite_number; i++) {
@@ -51,8 +83,6 @@ for (let i = 0; i < sprite_number; i++) {
   if (i === sprite_number - 1) end = sprite_number * sprite_size
   ranges.push([start, end])
 }
-
-let labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 // let mnist_images = mnist_tile_locations.map(src => {
 //   let img = document.createElement('img')
@@ -126,6 +156,8 @@ class Projection extends Component {
     this.transitionPoints = this.transitionPoints.bind(this)
     this.addSelectedPoints = this.addSelectedPoints.bind(this)
     this.labelSelected = this.labelSelected.bind(this)
+    this.showHover = this.showHover.bind(this)
+    this.hover_ctx = null
   }
 
   getZFromScale(scale) {
@@ -221,7 +253,7 @@ class Projection extends Component {
       let uniforms = {
         texture: { value: texture },
         repeat: { value: new THREE.Vector2(...repeat) },
-        size: { value: 20 },
+        size: { value: 30 },
       }
 
       let vertex_shader = `
@@ -261,6 +293,9 @@ class Projection extends Component {
       })
 
       let point_cloud = new THREE.Points(geometry, material)
+
+      point_cloud.userData = { sprite_index: s }
+
       parent_group.add(point_cloud)
     }
 
@@ -347,7 +382,7 @@ class Projection extends Component {
 
       let size_delay = 1200
       if (!transition_colors) size_delay = 400
-      let size = { value: 20 }
+      let size = { value: 30 }
       let end_size = { value: 0 }
       let me = this
       let size_tween = new TWEEN.Tween(size)
@@ -437,7 +472,7 @@ class Projection extends Component {
       }
 
       let color_prep = indexes.map(i => {
-        return [1, 1, 1]
+        return [0.85, 0.85, 0.85]
       })
       let color_flattened = _.flatten(color_prep)
       let colors = new Float32Array(color_flattened)
@@ -510,7 +545,7 @@ class Projection extends Component {
 
   revealSelected() {
     let size = { value: 0 }
-    let end_size = { value: 20 }
+    let end_size = { value: 30 }
     let groups = this.scene.children[1].children
     for (let g = 0; g < groups.length; g++) {
       let points = groups[g]
@@ -604,7 +639,7 @@ class Projection extends Component {
       this.props.loaded_embedding !== null
     ) {
       // first load
-      Promise.all(getTextures(mnist_tile_locations)).then(textures => {
+      Promise.all(getTextures(tile_dict[this.props.dataset])).then(textures => {
         this.textures = textures
         this.addPoints()
         this.addSelectedPoints()
@@ -616,8 +651,21 @@ class Projection extends Component {
       let d = decodeS(this.props.loaded_embedding)
       if (prevd.dataset !== d.dataset) {
         // different dataset
-        console.log('different dataset')
-        // this.addPoints()
+        while (this.scene.children.length > 0) {
+          this.scene.remove(this.scene.children[0])
+        }
+        this.props.setTransitionStatus(0)
+        let me = this
+        setTimeout(() => {
+          Promise.all(getTextures(tile_dict[me.props.dataset])).then(
+            textures => {
+              me.textures = textures
+              me.addPoints()
+              me.addSelectedPoints()
+              me.props.setTransitionStatus(0.5)
+            }
+          )
+        }, 0)
       } else if (prevd.strategy !== d.strategy) {
         // new strategy, we should transition
         // new strategy, who dis
@@ -661,6 +709,121 @@ class Projection extends Component {
     }
   }
 
+  showHover(mouse_coords, sprite_index, digit_index, full_index) {
+    let loaded = this.props.embeddings[this.props.loaded_embedding]
+    this.scene.children[1].visible = true
+    this.hover_mount.style.display = 'block'
+    this.hover_mount.style.transform = `translate3d(${mouse_coords[0] -
+      hover_size / 2 -
+      hover_pad}px, ${mouse_coords[1] -
+      hover_size -
+      this.props.grem -
+      hover_pad * 4 -
+      14}px,0)`
+    this.hover_ctx = this.hover_mount.childNodes[0].getContext('2d')
+    let label = this.hover_mount.childNodes[1]
+    this.hover_ctx.fillRect(0, 0, hover_size, hover_size)
+
+    let status = loaded.statuses[full_index]
+
+    let adjusted_status = status_to_color.slice(0, status_to_color.length - 1)
+    adjusted_status.push([0.5, 0.5, 0.5])
+
+    let color = null
+    let text_color = 'black'
+    if (status === 1) {
+      color = '#eee'
+      text_color = 'black'
+    } else {
+      color =
+        'rgba(' +
+        adjusted_status[loaded.labels[full_index]]
+          .map(d => Math.round(d * 255))
+          .join(',') +
+        ',1)'
+    }
+    this.hover_mount.style.background = color
+    this.hover_mount.style.color = text_color
+
+    label.style.background = color
+    label.innerText =
+      status === 1
+        ? 'selected'
+        : [...label_dict[this.props.dataset], 'unlabeled'][
+            loaded.labels[full_index]
+          ]
+    this.hover_ctx.drawImage(
+      image_dict[this.props.dataset][sprite_index],
+      // source rectangle
+      (digit_index % sprite_side) * sprite_image_size,
+      Math.floor(digit_index / sprite_side) * sprite_image_size,
+      sprite_image_size,
+      sprite_image_size,
+      // destination rectangle
+      0,
+      0,
+      hover_size,
+      hover_size
+    )
+  }
+
+  checkIntersects(mouse_position) {
+    let { width, height } = this.props
+    let [mouseX, mouseY] = mouse_position
+
+    function mouseToThree([mouseX, mouseY]) {
+      return new THREE.Vector3(
+        (mouseX / width) * 2 - 1,
+        -(mouseY / height) * 2 + 1,
+        1
+      )
+    }
+
+    function sortIntersectsByDistanceToRay(intersects) {
+      return _.sortBy(intersects, 'distanceToRay')
+    }
+
+    let mouse_vector = mouseToThree(mouse_position)
+    this.raycaster.setFromCamera(mouse_vector, this.camera)
+    this.raycaster.params.Points.threshold = 0.25
+    if (
+      this.scene.children[0] !== undefined &&
+      this.scene.children[0].children.length > 0
+    ) {
+      let intersects = this.raycaster.intersectObjects(
+        this.scene.children[0].children
+      )
+      if (intersects[0]) {
+        let sorted_intersects = sortIntersectsByDistanceToRay(intersects)
+        let intersect = sorted_intersects[0]
+        let sprite_index = intersect.object.userData.sprite_index
+        let digit_index = intersect.index
+        let full_index = sprite_index * sprite_size + digit_index
+        this.showHover([mouseX, mouseY], sprite_index, digit_index, full_index)
+        // this.props.setHoverIndex(full_index)
+        // this.highlightPoint(sprite_index, digit_index, full_index)
+      } else {
+        this.hover_mount.style.display = `none`
+      }
+    }
+  }
+
+  handleMouse() {
+    let view = d3.select(this.renderer.domElement)
+
+    this.raycaster = new THREE.Raycaster()
+
+    view.on('mousemove', () => {
+      let [mouseX, mouseY] = d3.mouse(view.node())
+      let mouse_position = [mouseX, mouseY]
+      this.checkIntersects(mouse_position)
+    })
+
+    view.on('mousedown', () => {
+      this.hover_mount.style.display = `none`
+    })
+  }
+
   init() {
     let { width, height } = this.props
 
@@ -700,6 +863,8 @@ class Projection extends Component {
     this.d3_zoom.transform(view, initial_transform)
 
     this.animate()
+
+    this.handleMouse()
   }
 
   animate() {
@@ -718,7 +883,7 @@ class Projection extends Component {
   }
 
   render() {
-    let { width, height, grem } = this.props
+    let { width, height, grem, dataset } = this.props
     return (
       <div
         style={{
@@ -728,6 +893,7 @@ class Projection extends Component {
           height: height,
           background: '#222',
           overflow: 'hidden',
+          cursor: 'crosshair',
         }}
         grem={grem}
       >
@@ -751,7 +917,7 @@ class Projection extends Component {
             padding: `0 ${grem / 4}px`,
             position: 'absolute',
             left: 0,
-            bottom: this.props.footer_height + grem,
+            bottom: grem / 2,
             pointerEvents: 'none',
           }}
         >
@@ -767,7 +933,7 @@ class Projection extends Component {
                 background: '#888',
                 color: '#111',
                 height: grem,
-                padding: `0 ${grem / 2}px`,
+                padding: `0 ${grem / 4}px`,
                 textAlign: 'center',
               }}
             >
@@ -778,8 +944,9 @@ class Projection extends Component {
                 background: '#fff',
                 color: '#111',
                 height: grem,
-                padding: `0 ${grem / 2}px`,
+                padding: `0 ${grem / 4}px`,
                 textAlign: 'center',
+                marginLeft: grem / 4,
               }}
             >
               selected
@@ -793,7 +960,7 @@ class Projection extends Component {
               flexWrap: 'auto',
             }}
           >
-            <div style={{ padding: `0 ${grem / 4}px` }}>Labels:</div>
+            <div style={{ padding: `0 0 0 ${grem / 4}px` }}>Labels:</div>
             {color_array_hexes.map((c, i) => (
               <div
                 key={'color_' + i}
@@ -802,13 +969,50 @@ class Projection extends Component {
                   height: grem,
                   textAlign: 'center',
                   color: '#111',
-                  width: grem,
+                  padding: `0 ${grem / 4}px`,
+                  marginLeft: grem / 4,
                 }}
               >
-                {i}
+                {label_dict[dataset][i]}
               </div>
             ))}
           </div>
+        </div>
+        <div
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            width: hover_size + hover_pad * 2 + hover_bord * 2,
+            pointerEvents: 'none',
+            padding: hover_pad,
+            display: 'none',
+            color: 'white',
+            height: grem + hover_size + hover_pad * 3 + hover_bord * 2,
+            lineHeight: 0,
+            border: `solid ${hover_bord}px rgba(0,0,0,0.3)`,
+          }}
+          ref={mount => {
+            this.hover_mount = mount
+          }}
+        >
+          <canvas
+            width={hover_size}
+            height={hover_size}
+            style={{ imageRendering: 'pixelated' }}
+          />
+          <div
+            style={{
+              width: hover_size,
+              height: grem,
+              textAlign: 'center',
+              lineHeight: 1.5,
+              paddingTop: hover_pad,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          />
         </div>
       </div>
     )
