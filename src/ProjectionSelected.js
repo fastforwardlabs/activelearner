@@ -49,7 +49,7 @@ class ProjectionSelected extends Component {
           round={round}
           dataset={dataset}
         />
-        {true ? (
+        {false ? (
           <Selected
             width={selected_width}
             height={

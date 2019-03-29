@@ -29,12 +29,42 @@ function getTextures(texturesSources) {
 }
 
 // Constants for sprite sheets
-let sprite_side = 73
-let sprite_size = sprite_side * sprite_side
-let sprite_number = 12
-let sprite_image_size = 28
+// let sprite_side = 73
+// let sprite_size = sprite_side * sprite_side
+// let sprite_number = 12
+// let sprite_image_size = 28
 // actual sprite size needs to be power of 2
 let sprite_actual_size = 2048
+
+let sprite_spec_mnist = {
+  sprite_side: 73,
+  sprite_size: 73 * 73,
+  sprite_number: 12,
+  sprite_image_size: 28,
+}
+
+let sprite_spec_quickdraw = Object.assign({}, sprite_spec_mnist, {
+  sprite_number: 13,
+})
+
+let sprite_spec_caltech = Object.assign({}, sprite_spec_mnist, {
+  sprite_side: 9,
+  sprite_size: 9 * 9,
+  sprite_number: 11,
+  sprite_image_size: 224,
+})
+
+let sprite_spec_dict = {
+  MNIST: sprite_spec_mnist,
+  Quickdraw: sprite_spec_quickdraw,
+  Caltech: sprite_spec_caltech,
+}
+
+let point_size_dict = {
+  MNIST: 30,
+  Quickdraw: 30,
+  Caltech: 30,
+}
 
 let hover_size = 28 * 3
 let hover_pad = 4
@@ -45,18 +75,24 @@ let circle_texture = loader.load(`${process.env.PUBLIC_URL}/circle.png`)
 circle_texture.flipY = false
 
 let mnist_tile_string = 'mnist_'
-let mnist_tile_locations = [...Array(sprite_number)].map(
+let mnist_tile_locations = [...Array(sprite_spec_mnist.sprite_number)].map(
   (n, i) => `${process.env.PUBLIC_URL}/${mnist_tile_string}${i}.png`
 )
 
 let quickdraw_tile_string = 'QUICKDRAW_'
-let quickdraw_tile_locations = [...Array(sprite_number)].map(
-  (n, i) => `${process.env.PUBLIC_URL}/${quickdraw_tile_string}${i}.png`
+let quickdraw_tile_locations = [
+  ...Array(sprite_spec_quickdraw.sprite_number),
+].map((n, i) => `${process.env.PUBLIC_URL}/${quickdraw_tile_string}${i}.png`)
+
+let caltech_tile_string = 'caltech_'
+let caltech_tile_locations = [...Array(sprite_spec_caltech.sprite_number)].map(
+  (n, i) => `${process.env.PUBLIC_URL}/${caltech_tile_string}${i}.png`
 )
 
 let tile_dict = {
   MNIST: mnist_tile_locations,
   Quickdraw: quickdraw_tile_locations,
+  Caltech: caltech_tile_locations,
 }
 
 let mnist_images = mnist_tile_locations.map(src => {
@@ -71,17 +107,29 @@ let quickdraw_images = quickdraw_tile_locations.map(src => {
   return img
 })
 
+let caltech_images = caltech_tile_locations.map(src => {
+  let img = document.createElement('img')
+  img.src = src
+  return img
+})
+
 let image_dict = {
   MNIST: mnist_images,
   Quickdraw: quickdraw_images,
+  Caltech: caltech_images,
 }
 
-let ranges = []
-for (let i = 0; i < sprite_number; i++) {
-  let start = i * sprite_size
-  let end = (i + 1) * sprite_size
-  if (i === sprite_number - 1) end = sprite_number * sprite_size
-  ranges.push([start, end])
+function getRanges(dataset) {
+  let ranges = []
+  let spec = sprite_spec_dict[dataset]
+  let { sprite_number, sprite_size } = spec
+  for (let i = 0; i < sprite_number; i++) {
+    let start = i * sprite_size
+    let end = (i + 1) * sprite_size
+    if (i === sprite_number - 1) end = sprite_number * sprite_size
+    ranges.push([start, end])
+  }
+  return ranges
 }
 
 // let mnist_images = mnist_tile_locations.map(src => {
@@ -103,30 +151,33 @@ for (let i = 0; i < sprite_number; i++) {
 //   [204, 235, 197],
 //   [100, 100, 100],
 // ]
-let color_num = 10
-let color_array = [...Array(color_num)].map((n, i) =>
-  chroma
-    .hsl(0 + (360 / color_num) * i, 1, 0.5)
-    .luminance(0.5)
-    .gl()
-)
-color_array.push(
-  chroma
-    .hsl(0, 0, 0.5)
-    .luminance(0.1)
-    .gl()
-)
-// console.log(color_array)
-color_num = 10
-let color_array_hexes = [...Array(color_num)].map((n, i) =>
-  chroma
-    .hsl(0 + (360 / color_num) * i, 1, 0.5)
-    .luminance(0.5)
-    .hex()
-)
 
-// let status_to_color = color_array.map(a => a.map(c => c / 255))
-let status_to_color = color_array.map(a => a.slice(0, 3))
+function getColorStuff(dataset) {
+  let color_num = label_dict[dataset].length
+  let color_array = [...Array(color_num)].map((n, i) =>
+    chroma
+      .hsl(0 + (360 / color_num) * i, 1, 0.5)
+      .luminance(0.5)
+      .gl()
+  )
+  color_array.push(
+    chroma
+      .hsl(0, 0, 0.5)
+      .luminance(0.1)
+      .gl()
+  )
+
+  let color_array_hexes = [...Array(color_num)].map((n, i) =>
+    chroma
+      .hsl(0 + (360 / color_num) * i, 1, 0.5)
+      .luminance(0.5)
+      .hex()
+  )
+
+  let status_to_color = color_array.map(a => a.slice(0, 3))
+
+  return { color_array, color_array_hexes, status_to_color }
+}
 
 function sliceRound(object, range) {
   return {
@@ -149,7 +200,11 @@ function prepPositions(coordinates) {
 class Projection extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      color_array: null,
+      color_array_hexes: null,
+      status_to_color: null,
+    }
     this.init = this.init.bind(this)
     this.animate = this.animate.bind(this)
     this.addPoints = this.addPoints.bind(this)
@@ -209,8 +264,13 @@ class Projection extends Component {
     //   return t
     // })
     let loaded = embeddings[loaded_embedding]
+    let ranges = getRanges(this.props.dataset)
     let loaded_sliced = ranges.map(range => sliceRound(loaded, range))
     let parent_group = new THREE.Group()
+
+    let { sprite_side, sprite_image_size } = sprite_spec_dict[
+      this.props.dataset
+    ]
 
     let slice_number = loaded_sliced.length
     for (let s = 0; s < slice_number; s++) {
@@ -233,7 +293,7 @@ class Projection extends Component {
       }
 
       let color_prep = slice.labels.map(label => {
-        return status_to_color[label]
+        return this.state.status_to_color[label]
       })
       let color_flattened = _.flatten(color_prep)
       let colors = new Float32Array(color_flattened)
@@ -253,7 +313,7 @@ class Projection extends Component {
       let uniforms = {
         texture: { value: texture },
         repeat: { value: new THREE.Vector2(...repeat) },
-        size: { value: 30 },
+        size: { value: point_size_dict[this.props.dataset] },
       }
 
       let vertex_shader = `
@@ -276,7 +336,6 @@ class Projection extends Component {
         varying vec3 vColor;
         void main() {
           vec2 uv = vec2( gl_PointCoord.x, gl_PointCoord.y );
-          // vec4 tex = texture2D( texture, uv * repeat );
           vec4 tex = texture2D( texture, uv * repeat  + vOffset);
           if ( tex.r < 0.5 ) discard;
           tex.r = 1.0;
@@ -284,6 +343,28 @@ class Projection extends Component {
           tex.b = 1.0;
           gl_FragColor = tex * vec4(vColor, 1.0);
         }`
+
+      if (this.props.dataset === 'Caltech') {
+        fragment_shader = `
+          uniform sampler2D texture;
+          uniform vec2 repeat;
+          varying vec2 vOffset;
+          varying vec3 vColor;
+          void main() {
+            vec2 uv = vec2( gl_PointCoord.x, gl_PointCoord.y );
+            // vec4 tex = texture2D( texture, uv * repeat );
+            vec4 tex = texture2D( texture, uv * repeat  + vOffset);
+            // if ( tex.r < 0.5 ) discard;
+            if ( uv[0] < 0.1 ) tex = vec4(vColor, 1.0);
+            if ( uv[1] < 0.1 ) tex = vec4(vColor, 1.0);
+            if ( uv[0] > 0.9 ) tex = vec4(vColor, 1.0);
+            if ( uv[1] > 0.9 ) tex = vec4(vColor, 1.0);
+            // tex.r = 1.0;
+            // tex.g = 1.0;
+            // tex.b = 1.0;
+            gl_FragColor = tex;
+        }`
+      }
 
       // material
       let material = new THREE.ShaderMaterial({
@@ -306,6 +387,8 @@ class Projection extends Component {
     let back_points = this.scene.children[0]
     let existing_points = this.scene.children[1].children
     let loaded = embeddings[loaded_embedding]
+
+    let ranges = getRanges(this.props.dataset)
     let loaded_sliced = ranges.map(range => sliceRound(loaded, range))
 
     let slice_number = loaded_sliced.length
@@ -319,7 +402,7 @@ class Projection extends Component {
       if (true || transition_colors) {
         let start_colors = back_existing.geometry.attributes.color.array.slice()
         let color_prep = slice.labels.map(label => {
-          let color = status_to_color[label]
+          let color = this.state.status_to_color[label]
           return color
         })
         let color_flattened = _.flatten(color_prep)
@@ -382,7 +465,7 @@ class Projection extends Component {
 
       let size_delay = 1200
       if (!transition_colors) size_delay = 400
-      let size = { value: 30 }
+      let size = { value: point_size_dict[this.props.dataset] }
       let end_size = { value: 0 }
       let me = this
       let size_tween = new TWEEN.Tween(size)
@@ -435,6 +518,11 @@ class Projection extends Component {
 
     let loaded = embeddings[loaded_embedding]
 
+    let { sprite_side, sprite_image_size } = sprite_spec_dict[
+      this.props.dataset
+    ]
+
+    let ranges = getRanges(this.props.dataset)
     let loaded_sliced = ranges.map(range => sliceRound(loaded, range))
 
     let parent_group = new THREE.Group()
@@ -528,6 +616,28 @@ class Projection extends Component {
           gl_FragColor = tex * vec4(vColor, 1.0);
         }`
 
+      if (this.props.dataset === 'Caltech') {
+        fragment_shader = `
+          uniform sampler2D texture;
+          uniform vec2 repeat;
+          varying vec2 vOffset;
+          varying vec3 vColor;
+          void main() {
+            vec2 uv = vec2( gl_PointCoord.x, gl_PointCoord.y );
+            // vec4 tex = texture2D( texture, uv * repeat );
+            vec4 tex = texture2D( texture, uv * repeat  + vOffset);
+            // if ( tex.r < 0.5 ) discard;
+            if ( uv[0] < 0.1 ) tex = vec4(vColor, 1.0);
+            if ( uv[1] < 0.1 ) tex = vec4(vColor, 1.0);
+            if ( uv[0] > 0.9 ) tex = vec4(vColor, 1.0);
+            if ( uv[1] > 0.9 ) tex = vec4(vColor, 1.0);
+            // tex.r = 1.0;
+            // tex.g = 1.0;
+            // tex.b = 1.0;
+            gl_FragColor = tex;
+        }`
+      }
+
       // material
       let material = new THREE.ShaderMaterial({
         uniforms: uniforms,
@@ -545,7 +655,7 @@ class Projection extends Component {
 
   revealSelected() {
     let size = { value: 0 }
-    let end_size = { value: 30 }
+    let end_size = { value: point_size_dict[this.props.dataset] }
     let groups = this.scene.children[1].children
     for (let g = 0; g < groups.length; g++) {
       let points = groups[g]
@@ -591,6 +701,7 @@ class Projection extends Component {
 
     let loaded = embeddings[loaded_embedding]
 
+    let ranges = getRanges(this.props.dataset)
     let loaded_sliced = ranges.map(range => sliceRound(loaded, range))
 
     let existing_points = this.scene.children[1].children
@@ -607,7 +718,7 @@ class Projection extends Component {
 
       let color_prep = indexes.map(i => {
         let label = slice.labels[i]
-        let color = status_to_color[label]
+        let color = this.state.status_to_color[label]
         return color
       })
       let color_flattened = _.flatten(color_prep)
@@ -650,6 +761,15 @@ class Projection extends Component {
       let prevd = decodeS(prevProps.loaded_embedding)
       let d = decodeS(this.props.loaded_embedding)
       if (prevd.dataset !== d.dataset) {
+        let { color_array, color_array_hexes, status_to_color } = getColorStuff(
+          d.dataset
+        )
+        this.setState({
+          color_array,
+          color_array_hexes,
+          status_to_color,
+        })
+
         // different dataset
         while (this.scene.children.length > 0) {
           this.scene.remove(this.scene.children[0])
@@ -713,20 +833,26 @@ class Projection extends Component {
     let loaded = this.props.embeddings[this.props.loaded_embedding]
     this.scene.children[1].visible = true
     this.hover_mount.style.display = 'block'
-    this.hover_mount.style.transform = `translate3d(${mouse_coords[0] -
-      hover_size / 2 -
-      hover_pad}px, ${mouse_coords[1] -
+    let y_adjust = `${mouse_coords[1] -
       hover_size -
       this.props.grem -
       hover_pad * 4 -
-      14}px,0)`
+      14}px`
+    // y_adjust = `${mouse_coords[1] - hover_size / 2 - hover_pad}px`
+    this.hover_mount.style.transform = `translate3d(${mouse_coords[0] -
+      hover_size / 2 -
+      hover_pad}px, ${y_adjust},0)`
     this.hover_ctx = this.hover_mount.childNodes[0].getContext('2d')
+    this.hover_ctx.imageSmoothingEnabled = false
     let label = this.hover_mount.childNodes[1]
     this.hover_ctx.fillRect(0, 0, hover_size, hover_size)
 
     let status = loaded.statuses[full_index]
 
-    let adjusted_status = status_to_color.slice(0, status_to_color.length - 1)
+    let adjusted_status = this.state.status_to_color.slice(
+      0,
+      this.state.status_to_color.length - 1
+    )
     adjusted_status.push([0.5, 0.5, 0.5])
 
     let color = null
@@ -744,6 +870,10 @@ class Projection extends Component {
     }
     this.hover_mount.style.background = color
     this.hover_mount.style.color = text_color
+
+    let { sprite_side, sprite_image_size } = sprite_spec_dict[
+      this.props.dataset
+    ]
 
     label.style.background = color
     label.innerText =
@@ -771,6 +901,8 @@ class Projection extends Component {
     let { width, height } = this.props
     let [mouseX, mouseY] = mouse_position
 
+    let { sprite_size } = sprite_spec_dict[this.props.dataset]
+
     function mouseToThree([mouseX, mouseY]) {
       return new THREE.Vector3(
         (mouseX / width) * 2 - 1,
@@ -786,6 +918,8 @@ class Projection extends Component {
     let mouse_vector = mouseToThree(mouse_position)
     this.raycaster.setFromCamera(mouse_vector, this.camera)
     this.raycaster.params.Points.threshold = 0.25
+    if (this.props.dataset === 'Caletch')
+      this.raycaster.params.Points.threshold = 4.0
     if (
       this.scene.children[0] !== undefined &&
       this.scene.children[0].children.length > 0
@@ -826,6 +960,15 @@ class Projection extends Component {
 
   init() {
     let { width, height } = this.props
+
+    let { color_array, color_array_hexes, status_to_color } = getColorStuff(
+      this.props.dataset
+    )
+    this.setState({
+      color_array,
+      color_array_hexes,
+      status_to_color,
+    })
 
     this.scene = new THREE.Scene()
 
@@ -961,21 +1104,23 @@ class Projection extends Component {
             }}
           >
             <div style={{ padding: `0 0 0 ${grem / 4}px` }}>Labels:</div>
-            {color_array_hexes.map((c, i) => (
-              <div
-                key={'color_' + i}
-                style={{
-                  background: color_array_hexes[i],
-                  height: grem,
-                  textAlign: 'center',
-                  color: '#111',
-                  padding: `0 ${grem / 4}px`,
-                  marginLeft: grem / 4,
-                }}
-              >
-                {label_dict[dataset][i]}
-              </div>
-            ))}
+            {this.state.color_array_hexes !== null
+              ? this.state.color_array_hexes.map((c, i) => (
+                  <div
+                    key={'color_' + i}
+                    style={{
+                      background: this.state.color_array_hexes[i],
+                      height: grem,
+                      textAlign: 'center',
+                      color: '#111',
+                      padding: `0 ${grem / 4}px`,
+                      marginLeft: grem / 4,
+                    }}
+                  >
+                    {label_dict[dataset][i]}
+                  </div>
+                ))
+              : null}
           </div>
         </div>
         <div

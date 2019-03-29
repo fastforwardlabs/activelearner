@@ -2,11 +2,22 @@ import React, { Component } from 'react'
 import { comma, drawLine, toPercent2 } from './Utils'
 import { mnist_strategies } from './mnist_strategies.js'
 import { quickdraw_strategies } from './quickdraw_strategies.js'
+import { caltech_strategies } from './caltech_strategies.js'
 import Canvas from './Canvas'
 import * as chroma from 'chroma-js'
 import * as _ from 'lodash'
 
-let strategy_dict = { MNIST: mnist_strategies, Quickdraw: quickdraw_strategies }
+let strategy_dict = {
+  MNIST: mnist_strategies,
+  Quickdraw: quickdraw_strategies,
+  Caltech: caltech_strategies,
+}
+
+let total_dict = {
+  MNIST: 60000,
+  Quickdraw: 65729,
+  Caltech: 822,
+}
 
 let placeholder_arrays = [...Array(4)].map(n =>
   [...Array(5)].map(n => Math.random())
@@ -246,6 +257,7 @@ class Accuracy extends Component {
                 width: (round_limit - strategy_explored) * cell_width,
                 height: height - grem * 2 - y_padding * 2,
                 border: 'solid 2px rgba(100,100,100,0.2)',
+                pointerEvents: 'auto',
                 borderLeft: 'none',
                 pointerEvents: 'none',
               }}
@@ -261,8 +273,12 @@ class Accuracy extends Component {
           }}
         >
           <div style={{ padding: `0 ${grem / 4}px` }}>
-            100,000 points, {comma(num_labeled[label_round])} labelled (
-            {toPercent2(num_labeled[label_round] / 1000000)})
+            {comma(total_dict[this.props.dataset])} points,{' '}
+            {comma(num_labeled[label_round])} labelled (
+            {toPercent2(
+              num_labeled[label_round] / total_dict[this.props.dataset]
+            )}
+            )
           </div>
         </div>
       </div>

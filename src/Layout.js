@@ -6,6 +6,7 @@ import ProjectionSelected from './ProjectionSelected'
 import BigButton from './BigButton'
 import Timer from './Timer'
 import * as chroma from 'chroma-js'
+import SelectedList from './SelectedList'
 
 // let strategy_colors = ['#1b9e77', '#d95f02', '#7570b3', '#e7298a']
 
@@ -75,12 +76,14 @@ class Layout extends Component {
       transition_status: 0,
       loading_round: false,
       simulating_labeling: false,
+      show_list: false,
     }
     this.setSize = this.setSize.bind(this)
     this.setHeaderHeight = this.setHeaderHeight.bind(this)
     this.setFooterHeight = this.setFooterHeight.bind(this)
     this.setTransitionStatus = this.setTransitionStatus.bind(this)
     this.labelsGotten = this.labelsGotten.bind(this)
+    this.toggleList = this.toggleList.bind(this)
   }
 
   setHeaderHeight(height) {
@@ -89,6 +92,10 @@ class Layout extends Component {
 
   setFooterHeight(height) {
     this.setState({ footer_height: height })
+  }
+
+  toggleList(new_value) {
+    this.setState({ show_list: new_value })
   }
 
   setSize() {
@@ -142,6 +149,7 @@ class Layout extends Component {
       loading_round,
       simulating_labeling,
       transition_status,
+      show_list,
     } = this.state
     let {
       dataset,
@@ -155,6 +163,7 @@ class Layout extends Component {
       requested_embedding,
       loaded_embedding,
       strategy_explored,
+      toggleList,
     } = this.props
 
     let font_size = 14
@@ -227,6 +236,8 @@ class Layout extends Component {
               setTransitionStatus={this.setTransitionStatus}
               round_limit={round_limit}
               round={round}
+              dataset={dataset}
+              toggleList={this.toggleList}
             />
           ) : null}
           <Header
@@ -274,21 +285,59 @@ class Layout extends Component {
                 display: 'grid',
                 justifyItems: 'center',
                 alignItems: 'center',
+                color: 'black',
               }}
             >
               <div
                 style={{
+                  position: 'relative',
                   width: Math.min(500, ww),
-                  background: '#666',
+                  background: 'white',
+                  color: 'black',
                   padding: grem,
                 }}
               >
-                <div>Getting labels for 1,000 selected points...</div>
                 <Timer
                   grem={grem}
                   gradient_string={gradient_string}
                   ww={ww}
                   labelsGotten={this.labelsGotten}
+                />
+                <div style={{ position: 'relative' }}>
+                  Getting labels for selected points...
+                </div>
+              </div>
+            </div>
+          ) : null}
+          {show_list ? (
+            <div
+              style={{
+                position: 'fixed',
+                left: 0,
+                top: 0,
+                width: '100vw',
+                height: '100vh',
+                display: 'grid',
+                justifyItems: 'center',
+                alignItems: 'center',
+                color: 'black',
+              }}
+            >
+              <div
+                style={{
+                  position: 'relative',
+                  width: ww - grem * 3,
+                  color: 'black',
+                }}
+              >
+                <SelectedList
+                  grem={grem}
+                  dataset={dataset}
+                  embeddings={embeddings}
+                  loaded_embedding={loaded_embedding}
+                  wh={wh}
+                  ww={ww - grem * 3}
+                  toggleList={this.toggleList}
                 />
               </div>
             </div>

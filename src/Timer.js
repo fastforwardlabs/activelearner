@@ -36,23 +36,24 @@ class Timer extends Component {
       <div>
         <div
           style={{
-            height: grem,
-            width: `${100}%`,
-            marginTop: grem / 2,
-            background: '#222',
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            left: 0,
+            top: 0,
           }}
         >
           <div
             style={{
-              height: grem,
+              height: '100%',
               width: `${(this.state.count / 1000) * 100}%`,
               overflow: 'hidden',
             }}
           >
             <div
               style={{
-                height: grem,
-                width: Math.min(500, ww) - grem * 2,
+                height: '100%',
+                width: '100%',
                 background: `linear-gradient(to right, ${
                   this.props.gradient_string
                 })`,

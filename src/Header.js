@@ -55,7 +55,7 @@ class Header extends Component {
             background: background,
             display: 'flex',
             flexWrap: 'wrap',
-            padding: `0 ${grem / 4}px`,
+            padding: `0 ${grem / 4}px 0 ${grem / 2}px`,
             pointerEvents: 'all',
           }}
         >

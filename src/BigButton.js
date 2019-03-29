@@ -37,25 +37,54 @@ class BigButton extends Component {
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          background: '#111',
           position: 'absolute',
-          bottom: this.props.footer_height,
-          right: 0,
+          bottom: this.props.footer_height + grem * 2.5,
+          left: 0,
+          padding: `0 ${grem / 4}px`,
+          pointerEvents: 'none',
         }}
       >
-        <div>
+        <div
+          style={{
+            padding: `0 ${grem / 4}px`,
+          }}
+        >
+          {this.props.dataset === 'Caltech' ? '50' : '1,000'} points selected
+        </div>
+        <div
+          style={{
+            padding: `0 ${grem / 4}px`,
+          }}
+        >
+          <button
+            style={{
+              pointerEvents: 'auto',
+            }}
+            onClick={() => {
+              this.props.toggleList(true)
+            }}
+          >
+            view list
+          </button>
+        </div>
+        <div
+          style={{
+            padding: `0 ${grem / 4}px`,
+          }}
+        >
           {round_limit !== adjusted_round ? (
             <button
               style={{
-                width: 200,
-                height: 2 * grem,
-                background: next_state === null ? '#eee' : 'white',
-                color: 'black',
+                width: 140,
+                height: grem,
+                background: next_state === null ? '#444' : 'white',
+                color: next_state === null ? 'white' : 'black',
                 textAlign: 'left',
-                paddingLeft: grem / 2,
                 cursor: next_state === null ? 'default' : 'pointer',
                 textDecoration: next_state === null ? 'none' : 'underline',
+                borderRadius: grem / 2,
+                textAlign: 'center',
+                pointerEvents: 'auto',
               }}
               disabled={next_state === null}
               onClick={() => {

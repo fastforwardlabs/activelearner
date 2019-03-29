@@ -55,4 +55,20 @@ let quickdraw_labels = [
   'bicycle',
   'elephant',
 ]
-export let label_dict = { MNIST: labels, Quickdraw: quickdraw_labels }
+let caltech_labels = [
+  'cake',
+  'dolphin',
+  'elephant',
+  'golden gate bridge',
+  'goldfish',
+  'rainbow',
+  'teapot',
+  'teddy bear',
+  'washing machine',
+  'waterfall',
+]
+export let label_dict = {
+  MNIST: labels,
+  Quickdraw: quickdraw_labels,
+  Caltech: caltech_labels,
+}

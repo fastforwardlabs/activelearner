@@ -20,9 +20,17 @@ let quickdraw_strategy_url = [
   'quickdraw_ensemble_entropy_round',
 ]
 
+let caltech_strategy_url = [
+  'caltech_random_round',
+  'caltech_entropy_round',
+  'caltech_adv_round',
+  'caltech_ensemble_entropy_round',
+]
+
 let strategy_dict = {
   [datasets[0]]: mnist_strategy_url,
   [datasets[1]]: quickdraw_strategy_url,
+  [datasets[2]]: caltech_strategy_url,
 }
 
 function es(dataset, strategy, round) {
@@ -36,7 +44,7 @@ class Data extends Component {
     super(props)
     this.state = {
       embeddings: {},
-      dataset: datasets[1],
+      dataset: datasets[0],
       strategy: strategies[1],
       round: 0,
       requested_embedding: null,
