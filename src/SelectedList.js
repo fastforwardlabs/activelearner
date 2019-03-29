@@ -38,7 +38,7 @@ let quickdraw_tile_locations = [
   ...Array(sprite_spec_quickdraw.sprite_number),
 ].map((n, i) => `${process.env.PUBLIC_URL}/${quickdraw_tile_string}${i}.png`)
 
-let caltech_tile_string = 'caltech_'
+let caltech_tile_string = 'CALTECH_'
 let caltech_tile_locations = [...Array(sprite_spec_caltech.sprite_number)].map(
   (n, i) => `${process.env.PUBLIC_URL}/${caltech_tile_string}${i}.png`
 )
