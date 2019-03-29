@@ -29,6 +29,9 @@ let y_padding = point_size * 2
 class Accuracy extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      show_tip: null,
+    }
     this.ctx = null
     this.getCtx = this.getCtx.bind(this)
     this.draw = this.draw.bind(this)
@@ -55,6 +58,14 @@ class Accuracy extends Component {
     if (new_round !== this.props.round) {
       this.props.selectRound(new_round)
     }
+  }
+
+  handleEnter(i) {
+    this.setState({ show_tip: i })
+  }
+
+  handleLeave() {
+    this.setState({ show_tip: null })
   }
 
   draw() {
@@ -191,6 +202,7 @@ class Accuracy extends Component {
       round_limit,
       dataset,
     } = this.props
+    let { show_tip } = this.state
 
     let num_labeled = strategy_dict[dataset].num_labeled
     let results = strategy_dict[dataset][strategy]
@@ -198,6 +210,11 @@ class Accuracy extends Component {
     let label_round = round
     let cell_width = 100
     if (transition_status > 1) label_round = round + 1
+
+    label_round = round
+
+    let strategy_accuracy = strategy_dict[dataset]
+
     return (
       <div style={{}}>
         <div style={{ display: 'inline-flex', pointerEvents: 'auto' }}>
@@ -214,7 +231,18 @@ class Accuracy extends Component {
           </div>
           <div style={{ padding: `0 ${grem / 4}px` }}>
             <div style={{ padding: `0 ${grem / 4}px` }}>
-              Accuracy: {toPercent2(results.accuracy[round])}
+              Accuracy: {(results.accuracy[round] * 100).toFixed(2)}% (+
+              {toPercent2(results.accuracy[round] - results.accuracy[0])})
+            </div>
+          </div>
+          <div style={{ padding: `0 ${grem / 4}px`, display: 'none' }}>
+            <div style={{ padding: `0 ${grem / 4}px` }}>
+              {`Relative Error Reduction: ${(
+                (1 -
+                  (1 - results.accuracy[round]) / (1 - results.accuracy[0])) *
+                100
+              ).toFixed(2)}`}
+              %
             </div>
           </div>
         </div>
@@ -233,22 +261,71 @@ class Accuracy extends Component {
             grem={grem}
           />
           <>
-            {[...Array(strategy_explored + 1)].map((n, i) => (
-              <div
-                key={'explored' + i}
-                onClick={() => {
-                  this.handleRound(i)
-                }}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: cell_width * i,
-                  width: cell_width,
-                  height: height - grem * 2,
-                  cursor: i === round ? 'default' : 'pointer',
-                }}
-              />
-            ))}
+            {[...Array(strategy_explored + 1)].map((n, i) => {
+              let race = strategies.map((s, j) => {
+                return {
+                  string: `${s}: ${toPercent2(
+                    strategy_accuracy[s].accuracy[i]
+                  )}`,
+                  strategy: s,
+                  value: strategy_accuracy[s].accuracy[i],
+                }
+              })
+              race = _.sortBy(race, 'value').reverse()
+
+              return (
+                <div
+                  key={'explored' + i}
+                  onMouseEnter={this.handleEnter.bind(this, i)}
+                  onMouseLeave={this.handleLeave.bind(this)}
+                  onClick={() => {
+                    this.handleRound(i)
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: cell_width * i,
+                    width: cell_width,
+                    height: height - grem * 2,
+                    cursor: i === round ? 'default' : 'pointer',
+                  }}
+                >
+                  {show_tip === i ? (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        bottom: height - grem * 1.5,
+                        background: '#333',
+                        padding: grem / 2,
+                        whiteSpace: 'nowrap',
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <div style={{ color: '#fff' }}>Round {i + 1}</div>
+                      {race.map(o => (
+                        <div
+                          style={{
+                            textTransform: 'capitalize',
+                            color: strategy === o.strategy ? '#fff' : '#aaa',
+                            fontSize: (grem / 1.5) * 0.9,
+                            display: 'flex',
+                            marginBottom: grem / 8,
+                          }}
+                        >
+                          <div style={{ marginRight: grem / 4 }}>
+                            {o.strategy}:
+                          </div>
+                          <div style={{ textAlign: 'right', flexGrow: 1 }}>
+                            {(o.value * 100).toFixed(2)}%
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              )
+            })}
             <div
               style={{
                 position: 'absolute',
