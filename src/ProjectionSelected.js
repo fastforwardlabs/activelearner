@@ -47,6 +47,7 @@ class ProjectionSelected extends Component {
           footer_height={footer_height}
           selectRound={this.props.selectRound}
           round={round}
+          round_limit={round_limit}
           dataset={dataset}
         />
         {false ? (

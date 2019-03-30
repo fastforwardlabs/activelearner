@@ -41,6 +41,7 @@ class Timer extends Component {
             width: '100%',
             left: 0,
             top: 0,
+            background: '#ddd',
           }}
         >
           <div

@@ -231,7 +231,10 @@ class Accuracy extends Component {
           </div>
           <div style={{ padding: `0 ${grem / 4}px` }}>
             <div style={{ padding: `0 ${grem / 4}px` }}>
-              Accuracy: {(results.accuracy[round] * 100).toFixed(2)}% (+
+              Accuracy: {(results.accuracy[round] * 100).toFixed(2)}% (
+              {Math.sign(results.accuracy[round] - results.accuracy[0]) === 1
+                ? '+'
+                : ''}
               {toPercent2(results.accuracy[round] - results.accuracy[0])})
             </div>
           </div>
@@ -269,6 +272,9 @@ class Accuracy extends Component {
                   )}`,
                   strategy: s,
                   value: strategy_accuracy[s].accuracy[i],
+                  diff:
+                    strategy_accuracy[s].accuracy[i] -
+                    strategy_accuracy[s].accuracy[0],
                 }
               })
               race = _.sortBy(race, 'value').reverse()
@@ -295,20 +301,22 @@ class Accuracy extends Component {
                       style={{
                         position: 'absolute',
                         left: 0,
-                        bottom: height - grem * 1.5,
+                        bottom: height - grem * 2,
                         background: '#333',
-                        padding: grem / 2,
+                        padding: `${grem / 2}px ${grem / 2}px`,
                         whiteSpace: 'nowrap',
                         pointerEvents: 'none',
+                        fontSize: (grem / 1.5) * 1,
                       }}
                     >
-                      <div style={{ color: '#fff' }}>Round {i + 1}</div>
+                      <div style={{ color: '#fff', marginBottom: grem / 4 }}>
+                        Round {i + 1}
+                      </div>
                       {race.map(o => (
                         <div
                           style={{
                             textTransform: 'capitalize',
                             color: strategy === o.strategy ? '#fff' : '#aaa',
-                            fontSize: (grem / 1.5) * 0.9,
                             display: 'flex',
                             marginBottom: grem / 8,
                           }}
@@ -317,7 +325,9 @@ class Accuracy extends Component {
                             {o.strategy}:
                           </div>
                           <div style={{ textAlign: 'right', flexGrow: 1 }}>
-                            {(o.value * 100).toFixed(2)}%
+                            {(o.value * 100).toFixed(2)}% (
+                            {Math.sign(o.diff) === 1 ? '+' : ''}
+                            {(o.diff * 100).toFixed(2)}%)
                           </div>
                         </div>
                       ))}

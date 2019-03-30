@@ -36,6 +36,12 @@ let status_to_color = [...Array(color_num)].map((n, i) =>
     .hex()
 )
 
+let total_dict = {
+  MNIST: 60000,
+  Quickdraw: 65729,
+  Caltech: 822,
+}
+
 class Selected extends Component {
   constructor(props) {
     super(props)

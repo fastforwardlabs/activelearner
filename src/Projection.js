@@ -6,6 +6,10 @@ import * as d3 from 'd3'
 import * as TWEEN from '@tweenjs/tween.js'
 import * as chroma from 'chroma-js'
 
+let color_duration = 600
+let size_duration = 600
+let position_duration = 1200
+
 /**
  *
  * @param {Array} texturesSources - List of Strings that represent texture sources
@@ -213,6 +217,7 @@ class Projection extends Component {
     this.labelSelected = this.labelSelected.bind(this)
     this.showHover = this.showHover.bind(this)
     this.hover_ctx = null
+    this.resetCamera = this.resetCamera.bind(this)
   }
 
   getZFromScale(scale) {
@@ -409,16 +414,16 @@ class Projection extends Component {
         let end_colors = new Float32Array(color_flattened)
 
         let color_tween = new TWEEN.Tween(start_colors)
-          .to(end_colors, 400)
+          .to(end_colors, color_duration)
           .easing(TWEEN.Easing.Linear.None)
         color_tween.onUpdate(function() {
           back_existing.geometry.attributes.color.array = start_colors
           back_existing.geometry.attributes.color.needsUpdate = true
         })
-        color_tween.delay(400)
+        color_tween.delay(color_duration)
 
         let position_tween = new TWEEN.Tween(start_position)
-          .to(end_position, 800)
+          .to(end_position, position_duration)
           .easing(TWEEN.Easing.Linear.None)
         position_tween.onUpdate(function() {
           back_existing.geometry.attributes.position.array = start_position
@@ -469,7 +474,7 @@ class Projection extends Component {
       let end_size = { value: 0 }
       let me = this
       let size_tween = new TWEEN.Tween(size)
-        .to(end_size, 400)
+        .to(end_size, size_duration)
         .easing(TWEEN.Easing.Linear.None)
         .delay(size_delay)
         .onComplete(() => {
@@ -484,7 +489,7 @@ class Projection extends Component {
       })
 
       let sel_position_tween = new TWEEN.Tween(sel_start_positions)
-        .to(sel_end_position, 800)
+        .to(sel_end_position, position_duration)
         .easing(TWEEN.Easing.Linear.None)
       sel_position_tween.onUpdate(function() {
         existing.geometry.attributes.position.array = sel_start_positions
@@ -660,7 +665,7 @@ class Projection extends Component {
     for (let g = 0; g < groups.length; g++) {
       let points = groups[g]
       let size_tween = new TWEEN.Tween(size)
-        .to(end_size, 400)
+        .to(end_size, size_duration)
         .easing(TWEEN.Easing.Linear.None)
       size_tween.onUpdate(function() {
         points.material.uniforms.size = size
@@ -668,7 +673,9 @@ class Projection extends Component {
       let me = this
       size_tween.onComplete(function() {
         if (g === 0) {
-          me.props.setTransitionStatus(1)
+          setTimeout(() => {
+            me.props.setTransitionStatus(1)
+          }, 600)
         }
       })
       size_tween.start()
@@ -774,6 +781,7 @@ class Projection extends Component {
         while (this.scene.children.length > 0) {
           this.scene.remove(this.scene.children[0])
         }
+        this.resetCamera()
         this.props.setTransitionStatus(0)
         let me = this
         setTimeout(() => {
@@ -781,6 +789,7 @@ class Projection extends Component {
             textures => {
               me.textures = textures
               me.addPoints()
+
               me.addSelectedPoints()
               me.props.setTransitionStatus(0.5)
             }
@@ -956,6 +965,10 @@ class Projection extends Component {
     view.on('mousedown', () => {
       this.hover_mount.style.display = `none`
     })
+
+    view.on('mouseleave', () => {
+      this.hover_mount.style.display = `none`
+    })
   }
 
   init() {
@@ -1008,6 +1021,22 @@ class Projection extends Component {
     this.animate()
 
     this.handleMouse()
+  }
+
+  resetCamera() {
+    let { width, height } = this.props
+
+    let view = d3.select(this.mount)
+
+    this.camera.position.x = 0
+    this.camera.position.y = 0
+    this.camera.position.z = 30
+
+    let initial_scale = this.getScaleFromZ(this.camera.position.z)
+    var initial_transform = d3.zoomIdentity
+      .translate(width / 2, height / 2)
+      .scale(initial_scale)
+    this.d3_zoom.transform(view, initial_transform)
   }
 
   animate() {

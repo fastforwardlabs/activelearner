@@ -295,15 +295,24 @@ class Layout extends Component {
                   background: 'white',
                   color: 'black',
                   padding: grem,
+                  background: '#888',
                 }}
               >
-                <Timer
-                  grem={grem}
-                  gradient_string={gradient_string}
-                  ww={ww}
-                  labelsGotten={this.labelsGotten}
-                />
-                <div style={{ position: 'relative' }}>
+                <div style={{ marginBottom: grem / 2 }}>Round {round + 1}</div>
+                <div style={{ position: 'relative', height: grem }}>
+                  <Timer
+                    grem={grem}
+                    gradient_string={gradient_string}
+                    ww={ww}
+                    labelsGotten={this.labelsGotten}
+                  />
+                </div>
+                <div
+                  style={{
+                    position: 'relative',
+                    paddingTop: grem / 2,
+                  }}
+                >
                   Getting labels for selected points...
                 </div>
               </div>
@@ -321,6 +330,10 @@ class Layout extends Component {
                 justifyItems: 'center',
                 alignItems: 'center',
                 color: 'black',
+                background: 'rgba(0, 0, 0, 0.4)',
+              }}
+              onClick={() => {
+                this.toggleList(false)
               }}
             >
               <div
@@ -329,10 +342,14 @@ class Layout extends Component {
                   width: ww - grem * 3,
                   color: 'black',
                 }}
+                onClick={e => {
+                  e.stopPropagation()
+                }}
               >
                 <SelectedList
                   grem={grem}
                   dataset={dataset}
+                  strategy={strategy}
                   embeddings={embeddings}
                   loaded_embedding={loaded_embedding}
                   wh={wh}

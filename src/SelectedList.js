@@ -112,6 +112,11 @@ class SelectedList extends Component {
           </button>
         </div>
         <div style={{ overflow: 'auto', height: wh - grem * 6 }}>
+          <div style={{ padding: grem / 2, paddingBottom: 0 }}>
+            {this.props.dataset === 'Caltech' ? '50' : '1,000'} points selected
+            for labeling from the {this.props.dataset} dataset using the{' '}
+            {this.props.strategy} strategy:
+          </div>
           <div
             style={{
               display: 'grid',

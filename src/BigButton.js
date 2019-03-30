@@ -10,22 +10,25 @@ class BigButton extends Component {
       button_text = 'Loading...'
       next_state = null
     } else if (transition_status === 0.5) {
-      button_text = 'Selecting...'
+      button_text = 'Selecting points...'
       next_state = null
     } else if (transition_status === 1) {
-      button_text = 'Label & train'
+      button_text = `${
+        this.props.dataset === 'Caltech' ? '50' : '1,000'
+      } points selected`
+
       next_state = 1.5
     } else if (transition_status === 1.5) {
-      button_text = 'Labeling...'
+      button_text = 'Labeling points...'
       next_state = null
     } else if (transition_status === 2) {
-      button_text = 'Training...'
+      button_text = 'Retraining model...'
       next_state = null
     } else if (transition_status === 2.3) {
-      button_text = 'Training...'
+      button_text = 'Retraining model...'
       next_state = null
     } else if (transition_status === 2.6) {
-      button_text = 'Deselecting...'
+      button_text = 'Selecting points...'
       next_state = null
     }
 
@@ -47,13 +50,15 @@ class BigButton extends Component {
         <div
           style={{
             padding: `0 ${grem / 4}px`,
+            position: 'relative',
           }}
         >
-          {this.props.dataset === 'Caltech' ? '50' : '1,000'} points selected
+          {button_text}
         </div>
         <div
           style={{
             padding: `0 ${grem / 4}px`,
+            display: next_state === null ? 'none' : 'block',
           }}
         >
           <button
@@ -85,6 +90,7 @@ class BigButton extends Component {
                 borderRadius: grem / 2,
                 textAlign: 'center',
                 pointerEvents: 'auto',
+                display: next_state === null ? 'none' : 'block',
               }}
               disabled={next_state === null}
               onClick={() => {
@@ -93,7 +99,7 @@ class BigButton extends Component {
                 }
               }}
             >
-              {button_text}
+              Label & train
             </button>
           ) : null}
         </div>

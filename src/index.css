@@ -80,3 +80,43 @@ button:active,
   background: #eee;
   text-decoration: none;
 }
+
+.rainbow-animate {
+  animation: rainbow 2s linear infinite;
+}
+
+@keyframes rainbow {
+  0% {
+    background: #ffa3a3;
+  }
+  10% {
+    background: #ffaa29;
+  }
+  20% {
+    background: #a2ca00;
+  }
+  30% {
+    background: #2bd900;
+  }
+  40% {
+    background: #00d857;
+  }
+  50% {
+    background: #00d1d1;
+  }
+  60% {
+    background: #92beff;
+  }
+  70% {
+    background: #c1b1ff;
+  }
+  80% {
+    background: #ec9fff;
+  }
+  90% {
+    background: #ff9cd7;
+  }
+  100% {
+    background: #ffa3a3;
+  }
+}
