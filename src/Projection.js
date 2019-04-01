@@ -778,7 +778,10 @@ class Projection extends Component {
           this.props.setTransitionStatus(0.5)
           let datasets = ['MNIST', 'Quickdraw', 'Caltech']
           let index = datasets.indexOf(this.props.dataset)
-          this.props.loadImages(index)
+          let me = this
+          setTimeout(() => {
+            me.props.loadImages(index)
+          }, 0)
           let height = this.divElement.clientHeight
           this.props.setKeyHeight(height)
         })
