@@ -775,13 +775,12 @@ class Projection extends Component {
         this.addPoints()
         this.addSelectedPoints()
         this.props.setTransitionStatus(0.5)
+        let datasets = ['MNIST', 'Quickdraw', 'Caltech']
+        let index = datasets.indexOf(this.props.dataset)
+        this.props.loadImages(index)
+        let height = this.divElement.clientHeight
+        this.props.setKeyHeight(height)
       })
-      let datasets = ['MNIST', 'Quickdraw', 'Caltech']
-      let index = datasets.indexOf(this.props.dataset)
-      this.props.loadImages(index)
-
-      let height = this.divElement.clientHeight
-      this.props.setKeyHeight(height)
     } else if (prevProps.loaded_embedding !== this.props.loaded_embedding) {
       //   // embeddings have changed
       let prevd = decodeS(prevProps.loaded_embedding)
