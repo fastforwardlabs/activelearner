@@ -40,11 +40,11 @@ let mnist_tile_string = 'mnist_'
 let mnist_tile_locations = [...Array(sprite_number)].map(
   (n, i) => `${process.env.PUBLIC_URL}/${mnist_tile_string}${i}.png`
 )
-let mnist_images = mnist_tile_locations.map(src => {
-  let img = document.createElement('img')
-  img.src = src
-  return img
-})
+// let mnist_images = mnist_tile_locations.map(src => {
+//   let img = document.createElement('img')
+//   img.src = src
+//   return img
+// })
 
 color_num = 10
 let color_array_hexes = [...Array(color_num)].map((n, i) =>
@@ -235,7 +235,6 @@ class Layout extends Component {
                 loaded_embedding={loaded_embedding}
                 loading_round={loading_round}
                 selectRound={this.props.selectRound}
-                mnist_images={mnist_images}
                 ranges={ranges}
                 transition_status={this.state.transition_status}
                 setTransitionStatus={this.setTransitionStatus}
