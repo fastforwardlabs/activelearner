@@ -81,8 +81,28 @@ button:active,
   text-decoration: none;
 }
 
+a {
+  color: inherit;
+}
+
+p {
+  margin: 0;
+}
+/*  */
 .rainbow-animate {
-  animation: rainbow 2s linear infinite;
+  animation: rainbow 10s linear infinite;
+}
+
+.rainbow-animate {
+  animation: rainbow 10s linear infinite;
+}
+
+.rainbow-animate-shadow {
+  animation: rainbow-shadow 10s linear infinite;
+}
+
+.gray-bg {
+  background: #444;
 }
 
 @keyframes rainbow {
@@ -118,5 +138,52 @@ button:active,
   }
   100% {
     background: #ffa3a3;
+  }
+}
+
+@keyframes rainbow-shadow {
+  0% {
+    background: #ffa3a3;
+    box-shadow: -0.25em 0 0 #ffa3a3, 0.25em 0 0 #ffa3a3;
+  }
+  10% {
+    background: #ffaa29;
+    box-shadow: -0.25em 0 0 #ffaa29, 0.25em 0 0 #ffaa29;
+  }
+  20% {
+    background: #a2ca00;
+    box-shadow: -0.25em 0 0 #a2ca00, 0.25em 0 0 #a2ca00;
+  }
+  30% {
+    background: #2bd900;
+    box-shadow: -0.25em 0 0 #2bd900, 0.25em 0 0 #2bd900;
+  }
+  40% {
+    background: #00d857;
+    box-shadow: -0.25em 0 0 #00d857, 0.25em 0 0 #00d857;
+  }
+  50% {
+    background: #00d1d1;
+    box-shadow: -0.25em 0 0 #00d1d1, 0.25em 0 0 #00d1d1;
+  }
+  60% {
+    background: #92beff;
+    box-shadow: -0.25em 0 0 #92beff, 0.25em 0 0 #92beff;
+  }
+  70% {
+    background: #c1b1ff;
+    box-shadow: -0.25em 0 0 #c1b1ff, 0.25em 0 0 #c1b1ff;
+  }
+  80% {
+    background: #ec9fff;
+    box-shadow: -0.25em 0 0 #ec9fff, 0.25em 0 0 #ec9fff;
+  }
+  90% {
+    background: #ff9cd7;
+    box-shadow: -0.25em 0 0 #ff9cd7, 0.25em 0 0 #ff9cd7;
+  }
+  100% {
+    background: #ffa3a3;
+    box-shadow: -0.25em 0 0 #ffa3a3, 0.25em 0 0 #ffa3a3;
   }
 }

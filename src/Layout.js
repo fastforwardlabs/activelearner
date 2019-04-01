@@ -6,7 +6,9 @@ import ProjectionSelected from './ProjectionSelected'
 import BigButton from './BigButton'
 import Timer from './Timer'
 import * as chroma from 'chroma-js'
+import { debounce } from 'lodash'
 import SelectedList from './SelectedList'
+import Modal from './Modal'
 
 // let strategy_colors = ['#1b9e77', '#d95f02', '#7570b3', '#e7298a']
 
@@ -77,13 +79,22 @@ class Layout extends Component {
       loading_round: false,
       simulating_labeling: false,
       show_list: false,
+      show_modal: true,
+      key_height: null,
     }
     this.setSize = this.setSize.bind(this)
+    this.setSize = debounce(this.setSize, 200)
     this.setHeaderHeight = this.setHeaderHeight.bind(this)
     this.setFooterHeight = this.setFooterHeight.bind(this)
     this.setTransitionStatus = this.setTransitionStatus.bind(this)
     this.labelsGotten = this.labelsGotten.bind(this)
     this.toggleList = this.toggleList.bind(this)
+    this.toggleModal = this.toggleModal.bind(this)
+    this.setKeyHeight = this.setKeyHeight.bind(this)
+  }
+
+  setKeyHeight(height) {
+    this.setState({ key_height: height })
   }
 
   setHeaderHeight(height) {
@@ -96,6 +107,10 @@ class Layout extends Component {
 
   toggleList(new_value) {
     this.setState({ show_list: new_value })
+  }
+
+  toggleModal(new_value) {
+    this.setState({ show_modal: new_value })
   }
 
   setSize() {
@@ -150,6 +165,7 @@ class Layout extends Component {
       simulating_labeling,
       transition_status,
       show_list,
+      show_modal,
     } = this.state
     let {
       dataset,
@@ -171,6 +187,8 @@ class Layout extends Component {
     let grem = font_size * line_height
 
     let round_limit = 7
+
+    let loading_embedding = requested_embedding !== loaded_embedding
 
     return ww === null ? (
       <div style={{ padding: grem / 4 }}>Loading layout...</div>
@@ -225,6 +243,9 @@ class Layout extends Component {
                 round={round}
                 header_height={header_height}
                 round_limit={round_limit}
+                loadImages={this.props.loadImages}
+                images={this.props.images}
+                setKeyHeight={this.setKeyHeight}
               />
             </div>
           ) : null}
@@ -238,6 +259,11 @@ class Layout extends Component {
               round={round}
               dataset={dataset}
               toggleList={this.toggleList}
+              selectRound={this.props.selectRound}
+              dataset={dataset}
+              strategy={strategy}
+              loading_embedding={loading_embedding}
+              key_height={this.state.key_height}
             />
           ) : null}
           <Header
@@ -253,6 +279,8 @@ class Layout extends Component {
             gradient_string={gradient_string}
             grem={grem}
             transition_status={this.state.transition_status}
+            setTransitionStatus={this.setTransitionStatus}
+            toggleModal={this.toggleModal}
           />
           {header_height !== null ? (
             <Footer
@@ -272,6 +300,7 @@ class Layout extends Component {
               strategy_explored={strategy_explored}
               round_limit={round_limit}
               dataset={dataset}
+              key_height={this.state.key_height}
             />
           ) : null}
           {this.state.simulating_labeling ? (
@@ -355,6 +384,46 @@ class Layout extends Component {
                   wh={wh}
                   ww={ww - grem * 3}
                   toggleList={this.toggleList}
+                />
+              </div>
+            </div>
+          ) : null}
+          {show_modal ? (
+            <div
+              style={{
+                position: 'fixed',
+                left: 0,
+                top: 0,
+                width: '100vw',
+                height: '100vh',
+                display: 'grid',
+                justifyItems: 'center',
+                alignItems: 'center',
+                color: 'black',
+                background: 'rgba(60, 60, 60, 0.4)',
+                overflow: 'auto',
+                paddingTop: wh < 800 ? wh / 4 : grem * 2.5,
+                paddingBottom: wh / 4,
+              }}
+              onClick={() => {
+                this.toggleModal(false)
+              }}
+            >
+              <div
+                style={{
+                  position: 'relative',
+                  maxWidth: 600,
+                  width: '100%',
+                  color: 'black',
+                }}
+                onClick={e => {
+                  e.stopPropagation()
+                }}
+              >
+                <Modal
+                  grem={grem}
+                  toggleModal={this.toggleModal}
+                  gradient_string={gradient_string}
                 />
               </div>
             </div>

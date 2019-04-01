@@ -6,9 +6,9 @@ import * as d3 from 'd3'
 import * as TWEEN from '@tweenjs/tween.js'
 import * as chroma from 'chroma-js'
 
-let color_duration = 600
-let size_duration = 600
-let position_duration = 1200
+let color_duration = 500
+let size_duration = 500
+let position_duration = 1000
 
 /**
  *
@@ -75,8 +75,8 @@ let hover_pad = 4
 let hover_bord = 0
 
 let loader = new THREE.TextureLoader()
-let circle_texture = loader.load(`${process.env.PUBLIC_URL}/circle.png`)
-circle_texture.flipY = false
+// let circle_texture = loader.load(`${process.env.PUBLIC_URL}/circle.png`)
+// circle_texture.flipY = false
 
 let mnist_tile_string = 'mnist_'
 let mnist_tile_locations = [...Array(sprite_spec_mnist.sprite_number)].map(
@@ -99,29 +99,29 @@ let tile_dict = {
   Caltech: caltech_tile_locations,
 }
 
-let mnist_images = mnist_tile_locations.map(src => {
-  let img = document.createElement('img')
-  img.src = src
-  return img
-})
+// let mnist_images = mnist_tile_locations.map(src => {
+//   let img = document.createElement('img')
+//   img.src = src
+//   return img
+// })
 
-let quickdraw_images = quickdraw_tile_locations.map(src => {
-  let img = document.createElement('img')
-  img.src = src
-  return img
-})
+// let quickdraw_images = quickdraw_tile_locations.map(src => {
+//   let img = document.createElement('img')
+//   img.src = src
+//   return img
+// })
 
-let caltech_images = caltech_tile_locations.map(src => {
-  let img = document.createElement('img')
-  img.src = src
-  return img
-})
+// let caltech_images = caltech_tile_locations.map(src => {
+//   let img = document.createElement('img')
+//   img.src = src
+//   return img
+// })
 
-let image_dict = {
-  MNIST: mnist_images,
-  Quickdraw: quickdraw_images,
-  Caltech: caltech_images,
-}
+// let image_dict = {
+//   MNIST: mnist_images,
+//   Quickdraw: quickdraw_images,
+//   Caltech: caltech_images,
+// }
 
 function getRanges(dataset) {
   let ranges = []
@@ -218,6 +218,8 @@ class Projection extends Component {
     this.showHover = this.showHover.bind(this)
     this.hover_ctx = null
     this.resetCamera = this.resetCamera.bind(this)
+    this.prev_d3_x = null
+    this.prev_d3_y = null
   }
 
   getZFromScale(scale) {
@@ -243,14 +245,22 @@ class Projection extends Component {
     let y = (d3_transform.y - this.props.height / 2) / scale
     let z = this.getZFromScale(scale)
 
-    this.camera.position.set(x, y, z)
+    if (d3.event.transform.k === this.getScaleFromZ(this.camera.position.z)) {
+      if (this.prev_d3_x !== null) {
+        let dx = d3_transform.x - this.prev_d3_x
+        let dy = d3_transform.y - this.prev_d3_y
+        let hover_transform = this.hover_mount.style.transform.split(',')
+        let hover_x = parseInt(hover_transform[0].split('(')[1])
+        let hover_y = parseInt(hover_transform[1])
+        this.hover_mount.style.transform = `translate3d(${hover_x +
+          dx}px, ${hover_y + dy}px, 0)`
+      }
+    }
 
-    // point size scales at end of zoom
-    // let new_size = zoomScaler(z)
-    // let point_group = this.scene.children[0].children
-    // for (let c = 0; c < point_group.length; c++) {
-    //   point_group[c].material.uniforms.size.value = new_size
-    // }
+    this.prev_d3_x = d3_transform.x
+    this.prev_d3_y = d3_transform.y
+
+    this.camera.position.set(x, y, z)
   }
 
   addPoints() {
@@ -502,7 +512,8 @@ class Projection extends Component {
               me.props.setTransitionStatus(2.6)
             } else {
               me.addSelectedPoints()
-              me.props.setTransitionStatus(0)
+              me.props.setTransitionStatus(2.6)
+              me.props.setTransitionStatus(0.5)
             }
           }, 0)
         }
@@ -510,6 +521,8 @@ class Projection extends Component {
       if (existing.material.uniforms.size.value > 0) {
         sel_position_tween.chain(size_tween)
       } else {
+        // me.addSelectedPoints()
+        // me.props.setTransitionStatus(0.5)
         // existing.material.uniforms.size.value = 20
       }
       sel_position_tween.start()
@@ -675,7 +688,7 @@ class Projection extends Component {
         if (g === 0) {
           setTimeout(() => {
             me.props.setTransitionStatus(1)
-          }, 600)
+          }, 200)
         }
       })
       size_tween.start()
@@ -763,6 +776,12 @@ class Projection extends Component {
         this.addSelectedPoints()
         this.props.setTransitionStatus(0.5)
       })
+      let datasets = ['MNIST', 'Quickdraw', 'Caltech']
+      let index = datasets.indexOf(this.props.dataset)
+      this.props.loadImages(index)
+
+      let height = this.divElement.clientHeight
+      this.props.setKeyHeight(height)
     } else if (prevProps.loaded_embedding !== this.props.loaded_embedding) {
       //   // embeddings have changed
       let prevd = decodeS(prevProps.loaded_embedding)
@@ -783,6 +802,8 @@ class Projection extends Component {
         }
         this.resetCamera()
         this.props.setTransitionStatus(0)
+        let height = this.divElement.clientHeight
+        this.props.setKeyHeight(height)
         let me = this
         setTimeout(() => {
           Promise.all(getTextures(tile_dict[me.props.dataset])).then(
@@ -822,7 +843,12 @@ class Projection extends Component {
       (this.props.transition_status === 0.5 &&
         prevProps.transition_status === 2.6)
     ) {
-      this.revealSelected()
+      if (this.props.round !== this.props.round_limit) {
+        this.revealSelected()
+      } else {
+        // last round
+        this.props.setTransitionStatus(1)
+      }
     } else if (
       // probably a race condition here
       this.props.transition_status === 2 &&
@@ -836,11 +862,35 @@ class Projection extends Component {
       this.transitionPoints(this.props.loaded_embedding, this.props.embeddings)
     } else if (this.props.round !== prevProps.round) {
     }
+
+    let { width, height } = this.props
+    if (width !== prevProps.width || height !== prevProps.height) {
+      this.camera.aspect = width / height
+      this.camera.updateProjectionMatrix()
+      this.renderer.setSize(width, height)
+      let height = this.divElement.clientHeight
+      this.props.setKeyHeight(height)
+
+      let current_scale = this.getScaleFromZ(this.camera.position.z)
+      let d3_x =
+        -(this.camera.position.x * current_scale) + this.props.width / 2
+      let d3_y = this.camera.position.y * current_scale + this.props.height / 2
+      var resize_transform = d3.zoomIdentity
+        .translate(d3_x, d3_y)
+        .scale(current_scale)
+      let view = d3.select(this.mount)
+      this.d3_zoom.transform(view, resize_transform)
+    }
   }
 
   showHover(mouse_coords, sprite_index, digit_index, full_index) {
+    let images = this.props.images
+    let image_dict = {
+      MNIST: images[0],
+      Quickdraw: images[1],
+      Caltech: images[2],
+    }
     let loaded = this.props.embeddings[this.props.loaded_embedding]
-    this.scene.children[1].visible = true
     this.hover_mount.style.display = 'block'
     let y_adjust = `${mouse_coords[1] -
       hover_size -
@@ -866,7 +916,7 @@ class Projection extends Component {
 
     let color = null
     let text_color = 'black'
-    if (status === 1) {
+    if (status === 1 && this.props.round !== this.props.round_limit) {
       color = '#eee'
       text_color = 'black'
     } else {
@@ -886,7 +936,7 @@ class Projection extends Component {
 
     label.style.background = color
     label.innerText =
-      status === 1
+      status === 1 && this.props.round !== this.props.round_limit
         ? 'selected'
         : [...label_dict[this.props.dataset], 'unlabeled'][
             loaded.labels[full_index]
@@ -960,10 +1010,6 @@ class Projection extends Component {
       let [mouseX, mouseY] = d3.mouse(view.node())
       let mouse_position = [mouseX, mouseY]
       this.checkIntersects(mouse_position)
-    })
-
-    view.on('mousedown', () => {
-      this.hover_mount.style.display = `none`
     })
 
     view.on('mouseleave', () => {
@@ -1082,21 +1128,25 @@ class Projection extends Component {
           }}
         />
         <div
+          ref={divElement => {
+            this.divElement = divElement
+          }}
           style={{
             background: 'transparent',
             display: 'flex',
-            flexWrap: 'auto',
+            flexWrap: 'wrap',
             padding: `0 ${grem / 4}px`,
             position: 'absolute',
             left: 0,
-            bottom: grem / 2,
+            bottom: 0,
             pointerEvents: 'none',
           }}
         >
           <div
             style={{
               display: 'flex',
-              flexWrap: 'auto',
+              flexWrap: 'wrap',
+              marginBottom: grem / 2,
             }}
           >
             <div style={{ padding: `0 ${grem / 4}px` }}>Key:</div>
@@ -1127,12 +1177,13 @@ class Projection extends Component {
 
           <div
             style={{
-              padding: `0 ${grem / 4}px 0 ${grem * 0.75}px`,
+              padding: `0 ${grem / 4}px 0 ${grem / 4}px`,
               display: 'flex',
-              flexWrap: 'auto',
+              flexWrap: 'wrap',
+              marginBottom: grem / 2,
             }}
           >
-            <div style={{ padding: `0 0 0 ${grem / 4}px` }}>Labels:</div>
+            <div style={{ padding: `0 0 0 0` }}>Labels:</div>
             {this.state.color_array_hexes !== null
               ? this.state.color_array_hexes.map((c, i) => (
                   <div
@@ -1143,7 +1194,7 @@ class Projection extends Component {
                       textAlign: 'center',
                       color: '#111',
                       padding: `0 ${grem / 4}px`,
-                      marginLeft: grem / 4,
+                      marginRight: grem / 4,
                     }}
                   >
                     {label_dict[dataset][i]}

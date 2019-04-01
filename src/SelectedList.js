@@ -53,8 +53,6 @@ class SelectedList extends Component {
   render() {
     let { grem, embeddings, loaded_embedding, dataset, ww, wh } = this.props
 
-    console.log(wh)
-
     let selected_indexes = []
     // let loaded = embeddings[loaded_embedding]
     let loaded = embeddings[loaded_embedding]
@@ -70,7 +68,7 @@ class SelectedList extends Component {
       dataset
     ]
 
-    let target_width = 100 + grem / 2
+    let target_width = 80 + grem / 2
     let columns = Math.floor((ww - grem) / target_width)
     let image_width = (ww - grem - (columns - 1) * (grem / 2)) / columns
     // let image_columns = Math.round(ww- grem/2) / (target_width + grem / 2))

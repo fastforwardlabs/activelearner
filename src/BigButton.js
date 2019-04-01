@@ -2,7 +2,18 @@ import React, { Component } from 'react'
 
 class BigButton extends Component {
   render() {
-    let { transition_status, grem, round_limit, round } = this.props
+    let {
+      transition_status,
+      grem,
+      round_limit,
+      round,
+      dataset,
+      strategy,
+    } = this.props
+
+    let adjusted_round = round
+    if (transition_status > 1 && transition_status < 2.3)
+      adjusted_round = Math.max(0, adjusted_round - 1)
 
     let button_text
     let next_state
@@ -15,8 +26,10 @@ class BigButton extends Component {
     } else if (transition_status === 1) {
       button_text = `${
         this.props.dataset === 'Caltech' ? '50' : '1,000'
-      } points selected`
-
+      } points selected from ${dataset} using ${strategy}`
+      if (adjusted_round === round_limit)
+        button_text = `Final round of ${dataset} using ${strategy}`
+      if (this.props.loading_embedding) button_text = 'Loading...'
       next_state = 1.5
     } else if (transition_status === 1.5) {
       button_text = 'Labeling points...'
@@ -29,79 +42,115 @@ class BigButton extends Component {
       next_state = null
     } else if (transition_status === 2.6) {
       button_text = 'Selecting points...'
+      if (adjusted_round === round_limit)
+        button_text = `Final round of ${dataset} using ${strategy}`
       next_state = null
     }
 
-    let adjusted_round = round
-    if (transition_status > 1 && transition_status < 2.3)
-      adjusted_round = Math.max(0, adjusted_round - 1)
+    let inactive = next_state === null || round_limit === adjusted_round
 
     return (
       <div
         style={{
-          display: 'flex',
           position: 'absolute',
-          bottom: this.props.footer_height + grem * 2.5,
+          bottom:
+            this.props.key_height === null
+              ? grem + this.props.footer_height + grem * 1.5
+              : this.props.key_height + this.props.footer_height + grem * 1,
           left: 0,
           padding: `0 ${grem / 4}px`,
           pointerEvents: 'none',
         }}
       >
-        <div
-          style={{
-            padding: `0 ${grem / 4}px`,
-            position: 'relative',
-          }}
-        >
-          {button_text}
-        </div>
-        <div
-          style={{
-            padding: `0 ${grem / 4}px`,
-            display: next_state === null ? 'none' : 'block',
-          }}
-        >
-          <button
+        <div style={{ display: 'flex', marginBottom: grem / 2 }}>
+          <div
             style={{
-              pointerEvents: 'auto',
-            }}
-            onClick={() => {
-              this.props.toggleList(true)
+              padding: `0 ${grem / 4}px`,
+              position: 'relative',
             }}
           >
-            view list
-          </button>
+            {button_text}
+          </div>
         </div>
-        <div
-          style={{
-            padding: `0 ${grem / 4}px`,
-          }}
-        >
-          {round_limit !== adjusted_round ? (
+        <div style={{ display: 'flex' }}>
+          <div
+            style={{
+              padding: `0 ${grem / 4}px`,
+            }}
+          >
             <button
               style={{
-                width: 140,
+                pointerEvents: 'auto',
+                color: inactive ? '#555' : 'white',
+                textDecoration: inactive ? 'none' : 'underline',
+                cursor: inactive ? 'default' : 'pointer',
+                pointerEvents: inactive ? 'none' : 'auto',
+              }}
+              onClick={() => {
+                if (next_state !== null && round_limit !== adjusted_round) {
+                  this.props.toggleList(true)
+                }
+              }}
+            >
+              View list
+            </button>
+          </div>
+          <div
+            style={{
+              padding: `0 ${grem / 4}px`,
+            }}
+          >
+            <button
+              className={next_state === null ? 'gray-bg' : 'rainbow-animate'}
+              style={{
+                width: 120,
                 height: grem,
-                background: next_state === null ? '#444' : 'white',
-                color: next_state === null ? 'white' : 'black',
+                color: next_state === null ? '#222' : 'black',
                 textAlign: 'left',
                 cursor: next_state === null ? 'default' : 'pointer',
                 textDecoration: next_state === null ? 'none' : 'underline',
                 borderRadius: grem / 2,
                 textAlign: 'center',
                 pointerEvents: 'auto',
-                display: next_state === null ? 'none' : 'block',
               }}
               disabled={next_state === null}
               onClick={() => {
                 if (next_state !== null) {
-                  this.props.setTransitionStatus(next_state)
+                  if (round_limit === adjusted_round) {
+                    this.props.selectRound(0)
+                  } else {
+                    this.props.setTransitionStatus(next_state)
+                  }
                 }
               }}
             >
-              Label & train
+              {round_limit !== adjusted_round ? 'Next round' : 'Restart'}
             </button>
-          ) : null}
+          </div>
+          <div
+            style={{
+              padding: `0 ${grem / 4}px`,
+            }}
+          >
+            <button
+              style={{
+                pointerEvents: 'auto',
+                color: inactive ? '#555' : 'white',
+                textDecoration: inactive ? 'none' : 'underline',
+                cursor: inactive ? 'default' : 'pointer',
+                pointerEvents: inactive ? 'none' : 'auto',
+              }}
+              onClick={() => {
+                if (next_state !== null && round_limit !== adjusted_round) {
+                  if (next_state !== null) {
+                    this.props.selectRound(round_limit)
+                  }
+                }
+              }}
+            >
+              Jump to end
+            </button>
+          </div>
         </div>
       </div>
     )

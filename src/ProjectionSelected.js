@@ -49,6 +49,9 @@ class ProjectionSelected extends Component {
           round={round}
           round_limit={round_limit}
           dataset={dataset}
+          loadImages={this.props.loadImages}
+          images={this.props.images}
+          setKeyHeight={this.props.setKeyHeight}
         />
         {false ? (
           <Selected

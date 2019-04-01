@@ -41,7 +41,7 @@ class Footer extends Component {
     let adjusted_explored = strategy_explored
     if (transition_status > 1 && transition_status < 2.3) {
       adjusted_round = Math.max(0, adjusted_round - 1)
-      adjusted_explored = Math.max(0, adjusted_explored - 1)
+      // adjusted_explored = Math.max(0, adjusted_explored - 1)
     }
 
     return (
@@ -51,7 +51,10 @@ class Footer extends Component {
         }}
         style={{
           position: 'absolute',
-          bottom: grem * 2,
+          bottom:
+            this.props.key_height !== null
+              ? this.props.key_height + grem / 2
+              : grem * 2,
           left: 0,
           height: 7 * grem,
           pointerEvents: 'none',

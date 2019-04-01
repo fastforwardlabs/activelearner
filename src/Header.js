@@ -21,6 +21,11 @@ class Header extends Component {
     this.setHeight()
   }
 
+  handleStrategy(i) {
+    this.props.selectStrategy(i)
+    this.props.setTransitionStatus(0)
+  }
+
   render() {
     let {
       datasets,
@@ -55,7 +60,7 @@ class Header extends Component {
             background: background,
             display: 'flex',
             flexWrap: 'wrap',
-            padding: `0 ${grem / 4}px 0 ${grem / 2}px`,
+            padding: `0 ${grem / 4}px 0 ${grem / 4}px`,
             pointerEvents: 'all',
           }}
         >
@@ -125,11 +130,7 @@ class Header extends Component {
               active
                 ? (inner = <span>{capitalize(n)}</span>)
                 : (inner = (
-                    <button
-                      onClick={() => {
-                        selectStrategy(i)
-                      }}
-                    >
+                    <button onClick={this.handleStrategy.bind(this, i)}>
                       {capitalize(n)}
                     </button>
                   ))
@@ -147,6 +148,23 @@ class Header extends Component {
               )
             })
             .reduce((p, c) => [p, ' ', c])}
+        </div>
+        <div
+          style={{
+            background: background,
+            display: 'flex',
+            flexWrap: 'wrap',
+            padding: `0 ${grem / 2}px`,
+            pointerEvents: 'all',
+          }}
+        >
+          <button
+            onClick={() => {
+              this.props.toggleModal(true)
+            }}
+          >
+            ? Info
+          </button>
         </div>
       </div>
     )

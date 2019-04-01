@@ -37,6 +37,59 @@ function es(dataset, strategy, round) {
   return `${dataset}-${strategy}-${round}`
 }
 
+let sprite_actual_size = 2048
+
+let sprite_spec_mnist = {
+  sprite_side: 73,
+  sprite_size: 73 * 73,
+  sprite_number: 12,
+  sprite_image_size: 28,
+}
+
+let sprite_spec_quickdraw = Object.assign({}, sprite_spec_mnist, {
+  sprite_number: 13,
+})
+
+let sprite_spec_caltech = Object.assign({}, sprite_spec_mnist, {
+  sprite_side: 9,
+  sprite_size: 9 * 9,
+  sprite_number: 11,
+  sprite_image_size: 224,
+})
+
+let sprite_spec_dict = {
+  MNIST: sprite_spec_mnist,
+  Quickdraw: sprite_spec_quickdraw,
+  Caltech: sprite_spec_caltech,
+}
+
+let mnist_tile_string = 'mnist_'
+let mnist_tile_locations = [...Array(sprite_spec_mnist.sprite_number)].map(
+  (n, i) => `${process.env.PUBLIC_URL}/${mnist_tile_string}${i}.png`
+)
+
+let quickdraw_tile_string = 'QUICKDRAW_'
+let quickdraw_tile_locations = [
+  ...Array(sprite_spec_quickdraw.sprite_number),
+].map((n, i) => `${process.env.PUBLIC_URL}/${quickdraw_tile_string}${i}.png`)
+
+let caltech_tile_string = 'CALTECH_'
+let caltech_tile_locations = [...Array(sprite_spec_caltech.sprite_number)].map(
+  (n, i) => `${process.env.PUBLIC_URL}/${caltech_tile_string}${i}.png`
+)
+
+let tile_dict = {
+  MNIST: mnist_tile_locations,
+  Quickdraw: quickdraw_tile_locations,
+  Caltech: caltech_tile_locations,
+}
+
+let tile_array = [
+  mnist_tile_locations,
+  quickdraw_tile_locations,
+  caltech_tile_locations,
+]
+
 // range key ref: [init_embeddings, selected_embeddings, unselected_embeddings]
 
 class Data extends Component {
@@ -50,11 +103,14 @@ class Data extends Component {
       requested_embedding: null,
       loaded_embedding: null,
       strategy_explored: 0,
+      loading: false,
+      images: [null, null, null],
     }
     this.scaleEmbeddings = this.scaleEmbeddings.bind(this)
     this.fetchData = this.fetchData.bind(this)
     this.checkOrFetchData = this.checkOrFetchData.bind(this)
     this.selectRound = this.selectRound.bind(this)
+    this.loadImages = this.loadImages.bind(this)
   }
 
   selectRound(round) {
@@ -63,13 +119,25 @@ class Data extends Component {
     this.checkOrFetchData(this.state.dataset, this.state.strategy, round)
   }
 
+  loadImages(index) {
+    if (this.state.images[index] === null) {
+      let tile_locations = tile_array[index]
+      let images = tile_locations.map(src => {
+        let img = document.createElement('img')
+        img.src = src
+        return img
+      })
+      // make a copy
+      let new_images = this.state.images.slice()
+      new_images[index] = images
+      this.setState({ images: new_images })
+    }
+  }
+
   selectDataset(index) {
     this.setState({ dataset: datasets[index], strategy_explored: 0, round: 0 })
-    this.checkOrFetchData(
-      datasets[index],
-      this.state.strategy,
-      this.state.round
-    )
+    this.checkOrFetchData(datasets[index], this.state.strategy, 0)
+    this.loadImages(index)
   }
 
   selectStrategy(index) {
@@ -195,6 +263,7 @@ class Data extends Component {
         selectDataset={this.selectDataset.bind(this)}
         selectStrategy={this.selectStrategy.bind(this)}
         selectRound={this.selectRound.bind(this)}
+        loadImages={this.loadImages.bind(this)}
       />
     )
   }

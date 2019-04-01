@@ -92,6 +92,7 @@ class Accuracy extends Component {
     // let x_padding = point_size
     let cell_num = 8
     let cell_width = 100
+    cell_width = Math.min(width / cell_num, cell_width)
     let x_padding = cell_width / 2
 
     let all_strat_results = strategies.map(s =>
@@ -99,8 +100,6 @@ class Accuracy extends Component {
     )
 
     let rounded_min = Math.floor(_.min(all_strat_results) * 10) / 10
-
-    let rounds_limit = strategy_explored
 
     let space = 1 - rounded_min
     let interval = 0.05
@@ -209,6 +208,8 @@ class Accuracy extends Component {
 
     let label_round = round
     let cell_width = 100
+    let cell_num = 8
+    cell_width = Math.min(width / cell_num, cell_width)
     if (transition_status > 1) label_round = round + 1
 
     label_round = round
@@ -216,8 +217,8 @@ class Accuracy extends Component {
     let strategy_accuracy = strategy_dict[dataset]
 
     return (
-      <div style={{}}>
-        <div style={{ display: 'inline-flex', pointerEvents: 'auto' }}>
+      <div style={{ pointerEvents: 'none' }}>
+        <div style={{ display: 'inline-flex' }}>
           <div style={{ padding: `0 ${grem / 4}px` }}>
             <div style={{ padding: `0 ${grem / 4}px` }}>
               {true ? (
@@ -312,8 +313,9 @@ class Accuracy extends Component {
                       <div style={{ color: '#fff', marginBottom: grem / 4 }}>
                         Round {i + 1}
                       </div>
-                      {race.map(o => (
+                      {race.map((o, i) => (
                         <div
+                          key={o.strategy}
                           style={{
                             textTransform: 'capitalize',
                             color: strategy === o.strategy ? '#fff' : '#aaa',
@@ -322,7 +324,7 @@ class Accuracy extends Component {
                           }}
                         >
                           <div style={{ marginRight: grem / 4 }}>
-                            {o.strategy}:
+                            {i + 1}. {o.strategy}:
                           </div>
                           <div style={{ textAlign: 'right', flexGrow: 1 }}>
                             {(o.value * 100).toFixed(2)}% (
@@ -354,7 +356,6 @@ class Accuracy extends Component {
         <div
           style={{
             display: 'flex',
-            pointerEvents: 'auto',
             justifyContent: 'space-between',
             padding: `0 ${grem / 4}px`,
           }}
