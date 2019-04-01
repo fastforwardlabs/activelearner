@@ -770,17 +770,21 @@ class Projection extends Component {
       this.props.loaded_embedding !== null
     ) {
       // first load
-      Promise.all(getTextures(tile_dict[this.props.dataset])).then(textures => {
-        this.textures = textures
-        this.addPoints()
-        this.addSelectedPoints()
-        this.props.setTransitionStatus(0.5)
-        let datasets = ['MNIST', 'Quickdraw', 'Caltech']
-        let index = datasets.indexOf(this.props.dataset)
-        this.props.loadImages(index)
-        let height = this.divElement.clientHeight
-        this.props.setKeyHeight(height)
-      })
+      Promise.all(getTextures(tile_dict[this.props.dataset]))
+        .then(textures => {
+          this.textures = textures
+          this.addPoints()
+          this.addSelectedPoints()
+          this.props.setTransitionStatus(0.5)
+          let datasets = ['MNIST', 'Quickdraw', 'Caltech']
+          let index = datasets.indexOf(this.props.dataset)
+          this.props.loadImages(index)
+          let height = this.divElement.clientHeight
+          this.props.setKeyHeight(height)
+        })
+        .catch(function(err) {
+          console.log(err.message) // some coding error in handling happened
+        })
     } else if (prevProps.loaded_embedding !== this.props.loaded_embedding) {
       //   // embeddings have changed
       let prevd = decodeS(prevProps.loaded_embedding)
