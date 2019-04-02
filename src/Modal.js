@@ -35,7 +35,7 @@ class Modal extends Component {
             <a href="http://fastforwardlabs.com">Cloudera Fast Forward Labs</a>,{' '}
             built to accompany our report on Learning with Limited Labeled Data.
             For more about the report{' '}
-            <a href="https://blog.fastforwardlabs.com/2019/03/20/learning-with-limited-labeled-data.html">
+            <a href="https://blog.fastforwardlabs.com/2019/04/02/a-guide-to-learning-with-limited-labeled-data.html">
               read our blog post
             </a>
             .
