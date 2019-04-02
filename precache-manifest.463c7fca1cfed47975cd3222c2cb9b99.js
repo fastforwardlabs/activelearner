@@ -20,24 +20,24 @@ self.__precacheManifest = [
     "url": "/static/media/IBMPlexMono-Bold.0fe304ab.woff2"
   },
   {
-    "revision": "e013d7fb192edf9a162083034de4c4dc",
-    "url": "/static/media/IBMPlexMono-Italic.e013d7fb.woff2"
+    "revision": "c7832ed5479c8b9eb5c4733047ecacbd",
+    "url": "/static/media/IBMPlexMono-Regular.c7832ed5.woff2"
   },
   {
     "revision": "4289aa978c126b40c79130726684a5a7",
     "url": "/static/media/IBMPlexMono-BoldItalic.4289aa97.woff2"
   },
   {
-    "revision": "c7832ed5479c8b9eb5c4733047ecacbd",
-    "url": "/static/media/IBMPlexMono-Regular.c7832ed5.woff2"
-  },
-  {
-    "revision": "3bbb37eb2e29eed031eaaf63664b21aa",
-    "url": "/static/media/IBMPlexMono-Regular.3bbb37eb.woff"
+    "revision": "e013d7fb192edf9a162083034de4c4dc",
+    "url": "/static/media/IBMPlexMono-Italic.e013d7fb.woff2"
   },
   {
     "revision": "cb143f1453de62a6febc058dfc352f0f",
     "url": "/static/media/IBMPlexMono-Italic.cb143f14.woff"
+  },
+  {
+    "revision": "3bbb37eb2e29eed031eaaf63664b21aa",
+    "url": "/static/media/IBMPlexMono-Regular.3bbb37eb.woff"
   },
   {
     "revision": "e497c7d84d1cd863756c67d4772e18de",
@@ -48,7 +48,7 @@ self.__precacheManifest = [
     "url": "/static/media/IBMPlexMono-BoldItalic.0cc0d044.woff"
   },
   {
-    "revision": "37b4885523be3fc900b3028f06364262",
+    "revision": "ad76d64798b632e0f7347fc25f9532cb",
     "url": "/index.html"
   }
 ];
