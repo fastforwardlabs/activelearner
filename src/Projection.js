@@ -856,7 +856,9 @@ class Projection extends Component {
       } else {
         // last round
         this.props.setTransitionStatus(1)
+        // if (!this.props.standings_seen) {
         this.props.toggleEnd(true)
+        // }
       }
     } else if (
       // probably a race condition here
@@ -903,70 +905,77 @@ class Projection extends Component {
       Quickdraw: images[1],
       Caltech: images[2],
     }
-    let loaded = this.props.embeddings[this.props.loaded_embedding]
-    this.hover_mount.style.display = 'block'
-    let y_adjust = `${mouse_coords[1] -
-      hover_size -
-      this.props.grem -
-      hover_pad * 4 -
-      14}px`
-    // y_adjust = `${mouse_coords[1] - hover_size / 2 - hover_pad}px`
-    this.hover_mount.style.transform = `translate3d(${mouse_coords[0] -
-      hover_size / 2 -
-      hover_pad}px, ${y_adjust},0)`
-    this.hover_ctx = this.hover_mount.childNodes[0].getContext('2d')
-    this.hover_ctx.imageSmoothingEnabled = false
-    let label = this.hover_mount.childNodes[1]
-    this.hover_ctx.fillRect(0, 0, hover_size, hover_size)
 
-    let status = loaded.statuses[full_index]
+    if (
+      this.hover_ctx !== undefined &&
+      image_dict[this.props.dataset] !== undefined &&
+      image_dict[this.props.dataset] !== null
+    ) {
+      let loaded = this.props.embeddings[this.props.loaded_embedding]
+      this.hover_mount.style.display = 'block'
+      let y_adjust = `${mouse_coords[1] -
+        hover_size -
+        this.props.grem -
+        hover_pad * 4 -
+        14}px`
+      // y_adjust = `${mouse_coords[1] - hover_size / 2 - hover_pad}px`
+      this.hover_mount.style.transform = `translate3d(${mouse_coords[0] -
+        hover_size / 2 -
+        hover_pad}px, ${y_adjust},0)`
+      this.hover_ctx = this.hover_mount.childNodes[0].getContext('2d')
+      this.hover_ctx.imageSmoothingEnabled = false
+      let label = this.hover_mount.childNodes[1]
+      this.hover_ctx.fillRect(0, 0, hover_size, hover_size)
 
-    let adjusted_status = this.state.status_to_color.slice(
-      0,
-      this.state.status_to_color.length - 1
-    )
-    adjusted_status.push([0.5, 0.5, 0.5])
+      let status = loaded.statuses[full_index]
 
-    let color = null
-    let text_color = 'black'
-    if (status === 1 && this.props.round !== this.props.round_limit) {
-      color = '#eee'
-      text_color = 'black'
-    } else {
-      color =
-        'rgba(' +
-        adjusted_status[loaded.labels[full_index]]
-          .map(d => Math.round(d * 255))
-          .join(',') +
-        ',1)'
+      let adjusted_status = this.state.status_to_color.slice(
+        0,
+        this.state.status_to_color.length - 1
+      )
+      adjusted_status.push([0.5, 0.5, 0.5])
+
+      let color = null
+      let text_color = 'black'
+      if (status === 1 && this.props.round !== this.props.round_limit) {
+        color = '#eee'
+        text_color = 'black'
+      } else {
+        color =
+          'rgba(' +
+          adjusted_status[loaded.labels[full_index]]
+            .map(d => Math.round(d * 255))
+            .join(',') +
+          ',1)'
+      }
+      this.hover_mount.style.background = color
+      this.hover_mount.style.color = text_color
+
+      let { sprite_side, sprite_image_size } = sprite_spec_dict[
+        this.props.dataset
+      ]
+
+      label.style.background = color
+      label.innerText =
+        status === 1 && this.props.round !== this.props.round_limit
+          ? 'selected'
+          : [...label_dict[this.props.dataset], 'unlabeled'][
+              loaded.labels[full_index]
+            ]
+      this.hover_ctx.drawImage(
+        image_dict[this.props.dataset][sprite_index],
+        // source rectangle
+        (digit_index % sprite_side) * sprite_image_size,
+        Math.floor(digit_index / sprite_side) * sprite_image_size,
+        sprite_image_size,
+        sprite_image_size,
+        // destination rectangle
+        0,
+        0,
+        hover_size,
+        hover_size
+      )
     }
-    this.hover_mount.style.background = color
-    this.hover_mount.style.color = text_color
-
-    let { sprite_side, sprite_image_size } = sprite_spec_dict[
-      this.props.dataset
-    ]
-
-    label.style.background = color
-    label.innerText =
-      status === 1 && this.props.round !== this.props.round_limit
-        ? 'selected'
-        : [...label_dict[this.props.dataset], 'unlabeled'][
-            loaded.labels[full_index]
-          ]
-    this.hover_ctx.drawImage(
-      image_dict[this.props.dataset][sprite_index],
-      // source rectangle
-      (digit_index % sprite_side) * sprite_image_size,
-      Math.floor(digit_index / sprite_side) * sprite_image_size,
-      sprite_image_size,
-      sprite_image_size,
-      // destination rectangle
-      0,
-      0,
-      hover_size,
-      hover_size
-    )
   }
 
   checkIntersects(mouse_position) {

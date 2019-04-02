@@ -102,6 +102,16 @@ class End extends Component {
             {toPercent2(num_labeled[end] / total_dict[this.props.dataset])} of
             the {comma(total_dict[this.props.dataset])} image dataset.
           </p>
+          <p>
+            <button
+              style={{ color: 'inherit' }}
+              onClick={() => {
+                this.props.toggleEnd(false)
+              }}
+            >
+              Continue exploring
+            </button>
+          </p>
         </div>
       </div>
     )

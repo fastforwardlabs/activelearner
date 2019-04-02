@@ -137,24 +137,43 @@ class BigButton extends Component {
               padding: `0 ${grem / 4}px`,
             }}
           >
-            <button
-              style={{
-                pointerEvents: 'auto',
-                color: inactive ? '#555' : 'white',
-                textDecoration: inactive ? 'none' : 'underline',
-                cursor: inactive ? 'default' : 'pointer',
-                pointerEvents: inactive ? 'none' : 'auto',
-              }}
-              onClick={() => {
-                if (next_state !== null && round_limit !== adjusted_round) {
+            {round_limit === adjusted_round ? (
+              <button
+                style={{
+                  pointerEvents: 'auto',
+                  color: next_state === null ? '#555' : 'white',
+                  textDecoration: next_state === null ? 'none' : 'underline',
+                  cursor: next_state === null ? 'default' : 'pointer',
+                  pointerEvents: next_state === null ? 'none' : 'auto',
+                }}
+                onClick={() => {
                   if (next_state !== null) {
-                    this.props.selectRound(round_limit)
+                    this.props.toggleEnd(true)
                   }
-                }
-              }}
-            >
-              Jump to end
-            </button>
+                }}
+              >
+                View results
+              </button>
+            ) : (
+              <button
+                style={{
+                  pointerEvents: 'auto',
+                  color: inactive ? '#555' : 'white',
+                  textDecoration: inactive ? 'none' : 'underline',
+                  cursor: inactive ? 'default' : 'pointer',
+                  pointerEvents: inactive ? 'none' : 'auto',
+                }}
+                onClick={() => {
+                  if (next_state !== null && round_limit !== adjusted_round) {
+                    if (next_state !== null) {
+                      this.props.selectRound(round_limit)
+                    }
+                  }
+                }}
+              >
+                Jump to end
+              </button>
+            )}
           </div>
         </div>
       </div>

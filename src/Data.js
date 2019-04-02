@@ -103,6 +103,7 @@ class Data extends Component {
       requested_embedding: null,
       loaded_embedding: null,
       strategy_explored: 0,
+      standings_seen: false,
       loading: false,
       images: [null, null, null],
     }
@@ -111,6 +112,7 @@ class Data extends Component {
     this.checkOrFetchData = this.checkOrFetchData.bind(this)
     this.selectRound = this.selectRound.bind(this)
     this.loadImages = this.loadImages.bind(this)
+    this.checkStandings = this.checkStandings.bind(this)
   }
 
   selectRound(round) {
@@ -135,7 +137,12 @@ class Data extends Component {
   }
 
   selectDataset(index) {
-    this.setState({ dataset: datasets[index], strategy_explored: 0, round: 0 })
+    this.setState({
+      dataset: datasets[index],
+      strategy_explored: 0,
+      round: 0,
+      standings_seen: false,
+    })
     this.checkOrFetchData(datasets[index], this.state.strategy, 0)
     this.loadImages(index)
   }
@@ -172,6 +179,10 @@ class Data extends Component {
       .range([-20, 20])
     let scaled_embeddings = embeddings.map(e => [scale(e[0]), scale(e[1])])
     return scaled_embeddings
+  }
+
+  checkStandings() {
+    this.setState({ standings_seen: true })
   }
 
   fetchData(dataset, strategy, round) {
@@ -264,6 +275,7 @@ class Data extends Component {
         selectStrategy={this.selectStrategy.bind(this)}
         selectRound={this.selectRound.bind(this)}
         loadImages={this.loadImages.bind(this)}
+        checkStandings={this.checkStandings}
       />
     )
   }

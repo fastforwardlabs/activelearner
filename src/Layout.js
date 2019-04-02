@@ -118,6 +118,7 @@ class Layout extends Component {
 
   toggleEnd(new_value) {
     this.setState({ show_end: new_value })
+    this.props.checkStandings()
   }
 
   setSize() {
@@ -254,6 +255,8 @@ class Layout extends Component {
                 images={this.props.images}
                 setKeyHeight={this.setKeyHeight}
                 toggleEnd={this.toggleEnd}
+                checkStandings={this.props.checkStandings}
+                standings_seen={this.props.standings_seen}
               />
             </div>
           ) : null}
@@ -272,6 +275,7 @@ class Layout extends Component {
               strategy={strategy}
               loading_embedding={loading_embedding}
               key_height={this.state.key_height}
+              toggleEnd={this.toggleEnd}
             />
           ) : null}
           <Header
