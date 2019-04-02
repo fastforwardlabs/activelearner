@@ -80,7 +80,7 @@ class Layout extends Component {
       loading_round: false,
       simulating_labeling: false,
       show_list: false,
-      show_modal: false,
+      show_modal: true,
       key_height: null,
       show_end: false,
     }
