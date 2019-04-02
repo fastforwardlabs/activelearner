@@ -208,6 +208,7 @@ class Projection extends Component {
       color_array: null,
       color_array_hexes: null,
       status_to_color: null,
+      initialized: false,
     }
     this.init = this.init.bind(this)
     this.animate = this.animate.bind(this)
@@ -766,9 +767,10 @@ class Projection extends Component {
 
   componentDidUpdate(prevProps) {
     if (
-      prevProps.loaded_embedding === null &&
-      this.props.loaded_embedding !== null
+      this.props.loaded_embedding !== null &&
+      this.state.initialized === false
     ) {
+      this.setState({ initialized: true })
       // first load
       Promise.all(getTextures(tile_dict[this.props.dataset]))
         .then(textures => {
@@ -781,9 +783,9 @@ class Projection extends Component {
           let me = this
           setTimeout(() => {
             me.props.loadImages(index)
+            let height = this.divElement.clientHeight
+            me.props.setKeyHeight(height)
           }, 0)
-          let height = this.divElement.clientHeight
-          this.props.setKeyHeight(height)
         })
         .catch(function(err) {
           console.log(err.message) // some coding error in handling happened
@@ -874,8 +876,6 @@ class Projection extends Component {
       this.camera.aspect = width / height
       this.camera.updateProjectionMatrix()
       this.renderer.setSize(width, height)
-      let height = this.divElement.clientHeight
-      this.props.setKeyHeight(height)
 
       let current_scale = this.getScaleFromZ(this.camera.position.z)
       let d3_x =
@@ -886,6 +886,12 @@ class Projection extends Component {
         .scale(current_scale)
       let view = d3.select(this.mount)
       this.d3_zoom.transform(view, resize_transform)
+
+      let me = this
+      setTimeout(() => {
+        let height = me.divElement.clientHeight
+        me.props.setKeyHeight(height)
+      }, 0)
     }
   }
 

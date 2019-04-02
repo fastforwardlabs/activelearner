@@ -48,7 +48,11 @@ class Accuracy extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.strategy_explored !== prevProps.strategy_explored) {
+    if (
+      this.props.strategy_explored !== prevProps.strategy_explored ||
+      (this.props.width < 800 && this.props.width !== prevProps.width) ||
+      (this.props.width > 800 && prevProps.width < 800)
+    ) {
       this.ctx.scale(2, 2)
     }
     this.draw()
@@ -362,7 +366,7 @@ class Accuracy extends Component {
         >
           <div style={{ padding: `0 ${grem / 4}px` }}>
             {comma(total_dict[this.props.dataset])} points,{' '}
-            {comma(num_labeled[label_round])} labelled (
+            {comma(num_labeled[label_round])} labeled (
             {toPercent2(
               num_labeled[label_round] / total_dict[this.props.dataset]
             )}

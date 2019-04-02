@@ -1,5 +1,10 @@
 import React, { Component } from 'react'
 
+const capitalize = s => {
+  if (typeof s !== 'string') return ''
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
 class BigButton extends Component {
   render() {
     let {
@@ -26,7 +31,7 @@ class BigButton extends Component {
     } else if (transition_status === 1) {
       button_text = `${
         this.props.dataset === 'Caltech' ? '50' : '1,000'
-      } points selected from ${dataset} using ${strategy}`
+      } points selected from ${dataset} using ${capitalize(strategy)}`
       if (adjusted_round === round_limit)
         button_text = `Final round of ${dataset} using ${strategy}`
       if (this.props.loading_embedding) button_text = 'Loading...'
