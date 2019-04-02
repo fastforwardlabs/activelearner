@@ -284,6 +284,16 @@ class Accuracy extends Component {
               })
               race = _.sortBy(race, 'value').reverse()
 
+              let centerer = (cell_width - 274) / 2
+              let offset = cell_width * i
+              let left = centerer
+              let right = 'auto'
+              if (offset + centerer < 0) left = -offset
+              if (offset + centerer + 274 > width) {
+                left = 'auto'
+                right = -(7 - i) * cell_width
+              }
+
               return (
                 <div
                   key={'explored' + i}
@@ -305,7 +315,9 @@ class Accuracy extends Component {
                     <div
                       style={{
                         position: 'absolute',
-                        left: 0,
+                        left: left,
+                        right: right,
+                        width: 274,
                         bottom: height - grem * 2,
                         background: '#333',
                         padding: `${grem / 2}px ${grem / 2}px`,

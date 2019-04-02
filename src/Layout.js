@@ -9,6 +9,7 @@ import * as chroma from 'chroma-js'
 import { debounce } from 'lodash'
 import SelectedList from './SelectedList'
 import Modal from './Modal'
+import End from './End'
 
 // let strategy_colors = ['#1b9e77', '#d95f02', '#7570b3', '#e7298a']
 
@@ -79,8 +80,9 @@ class Layout extends Component {
       loading_round: false,
       simulating_labeling: false,
       show_list: false,
-      show_modal: true,
+      show_modal: false,
       key_height: null,
+      show_end: false,
     }
     this.setSize = this.setSize.bind(this)
     this.setSize = debounce(this.setSize, 200)
@@ -90,6 +92,7 @@ class Layout extends Component {
     this.labelsGotten = this.labelsGotten.bind(this)
     this.toggleList = this.toggleList.bind(this)
     this.toggleModal = this.toggleModal.bind(this)
+    this.toggleEnd = this.toggleEnd.bind(this)
     this.setKeyHeight = this.setKeyHeight.bind(this)
   }
 
@@ -111,6 +114,10 @@ class Layout extends Component {
 
   toggleModal(new_value) {
     this.setState({ show_modal: new_value })
+  }
+
+  toggleEnd(new_value) {
+    this.setState({ show_end: new_value })
   }
 
   setSize() {
@@ -166,6 +173,7 @@ class Layout extends Component {
       transition_status,
       show_list,
       show_modal,
+      show_end,
     } = this.state
     let {
       dataset,
@@ -245,6 +253,7 @@ class Layout extends Component {
                 loadImages={this.props.loadImages}
                 images={this.props.images}
                 setKeyHeight={this.setKeyHeight}
+                toggleEnd={this.toggleEnd}
               />
             </div>
           ) : null}
@@ -423,6 +432,48 @@ class Layout extends Component {
                   grem={grem}
                   toggleModal={this.toggleModal}
                   gradient_string={gradient_string}
+                />
+              </div>
+            </div>
+          ) : null}
+          {show_end ? (
+            <div
+              style={{
+                position: 'fixed',
+                left: 0,
+                top: 0,
+                width: '100vw',
+                height: '100vh',
+                display: 'grid',
+                justifyItems: 'center',
+                alignItems: 'center',
+                color: 'black',
+                background: 'rgba(60, 60, 60, 0.4)',
+                overflow: 'auto',
+                paddingTop: wh < 800 ? wh / 4 : grem * 2.5,
+                paddingBottom: wh / 4,
+              }}
+              onClick={() => {
+                this.toggleEnd(false)
+              }}
+            >
+              <div
+                style={{
+                  position: 'relative',
+                  maxWidth: 600,
+                  width: '100%',
+                  color: 'black',
+                }}
+                onClick={e => {
+                  e.stopPropagation()
+                }}
+              >
+                <End
+                  grem={grem}
+                  strategy={strategy}
+                  dataset={dataset}
+                  strategies={strategies}
+                  toggleEnd={this.toggleEnd}
                 />
               </div>
             </div>

@@ -856,6 +856,7 @@ class Projection extends Component {
       } else {
         // last round
         this.props.setTransitionStatus(1)
+        this.props.toggleEnd(true)
       }
     } else if (
       // probably a race condition here
@@ -1159,6 +1160,7 @@ class Projection extends Component {
               display: 'flex',
               flexWrap: 'wrap',
               marginBottom: grem / 2,
+              marginRight: grem / 4,
             }}
           >
             <div style={{ padding: `0 ${grem / 4}px` }}>Key:</div>
@@ -1169,6 +1171,7 @@ class Projection extends Component {
                 height: grem,
                 padding: `0 ${grem / 4}px`,
                 textAlign: 'center',
+                marginRight: grem / 4,
               }}
             >
               unlabeled
@@ -1180,7 +1183,6 @@ class Projection extends Component {
                 height: grem,
                 padding: `0 ${grem / 4}px`,
                 textAlign: 'center',
-                marginLeft: grem / 4,
               }}
             >
               selected
@@ -1195,7 +1197,7 @@ class Projection extends Component {
               marginBottom: grem / 2,
             }}
           >
-            <div style={{ padding: `0 0 0 0` }}>Labels:</div>
+            <div style={{ padding: `0 ${grem / 4}px 0 0` }}>Labels:</div>
             {this.state.color_array_hexes !== null
               ? this.state.color_array_hexes.map((c, i) => (
                   <div

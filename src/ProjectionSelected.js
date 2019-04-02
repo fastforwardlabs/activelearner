@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import Projection from './Projection'
-import Selected from './Selected'
 
 class ProjectionSelected extends Component {
   render() {
@@ -52,25 +51,8 @@ class ProjectionSelected extends Component {
           loadImages={this.props.loadImages}
           images={this.props.images}
           setKeyHeight={this.props.setKeyHeight}
+          toggleEnd={this.props.toggleEnd}
         />
-        {false ? (
-          <Selected
-            width={selected_width}
-            height={
-              height - this.props.footer_height - grem * 2 - header_height
-            }
-            grem={grem}
-            mnist_images={mnist_images}
-            embeddings={embeddings}
-            loaded_embedding={loaded_embedding}
-            ranges={ranges}
-            transition_status={transition_status}
-            header_height={header_height}
-            round={round}
-            round_limit={round_limit}
-            dataset={dataset}
-          />
-        ) : null}
       </div>
     )
   }

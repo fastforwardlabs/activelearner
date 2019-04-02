@@ -123,7 +123,7 @@ class Modal extends Component {
               background: '#aaa',
             }}
           />
-          <p style={{ marginBottom: grem / 2 }}>Strategy and dataset info</p>
+          <p style={{}}>Strategy and dataset info</p>
           <p style={{ marginBottom: grem / 2, textIndent: grem }}>
             Active learning strategies focus on points that the model is
             especially uncertain about. You can see this focus in the
