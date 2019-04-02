@@ -857,7 +857,10 @@ class Projection extends Component {
         // last round
         this.props.setTransitionStatus(1)
         // if (!this.props.standings_seen) {
-        this.props.toggleEnd(true)
+        let me = this
+        setTimeout(() => {
+          me.props.toggleEnd(true)
+        }, 200)
         // }
       }
     } else if (
