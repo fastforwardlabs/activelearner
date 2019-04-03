@@ -54,7 +54,7 @@ class Timer extends Component {
             <div
               style={{
                 height: '100%',
-                width: '100%',
+                width: Math.min(500 - grem * 2, ww - grem * 2),
                 background: `linear-gradient(to right, ${
                   this.props.gradient_string
                 })`,

@@ -102,7 +102,7 @@ class Data extends Component {
       round: 0,
       requested_embedding: null,
       loaded_embedding: null,
-      strategy_explored: 0,
+      strategy_explored: [0, 0, 0],
       standings_seen: false,
       loading: false,
       images: [null, null, null],
@@ -116,8 +116,14 @@ class Data extends Component {
   }
 
   selectRound(round) {
-    let strat_limit = Math.max(this.state.strategy_explored, round)
-    this.setState({ round: round, strategy_explored: strat_limit })
+    let dataset_index = datasets.indexOf(this.state.dataset)
+    let new_exploreds = this.state.strategy_explored.slice()
+    let strat_limit = Math.max(
+      this.state.strategy_explored[dataset_index],
+      round
+    )
+    new_exploreds[dataset_index] = strat_limit
+    this.setState({ round: round, strategy_explored: new_exploreds })
     this.checkOrFetchData(this.state.dataset, this.state.strategy, round)
   }
 
@@ -139,7 +145,6 @@ class Data extends Component {
   selectDataset(index) {
     this.setState({
       dataset: datasets[index],
-      strategy_explored: 0,
       round: 0,
       standings_seen: false,
     })
@@ -266,9 +271,13 @@ class Data extends Component {
   }
 
   render() {
+    let dataset_index = datasets.indexOf(this.state.dataset)
+    let altered_state = Object.assign({}, this.state, {
+      strategy_explored: this.state.strategy_explored[dataset_index],
+    })
     return (
       <Layout
-        {...this.state}
+        {...altered_state}
         datasets={datasets}
         strategies={strategies}
         selectDataset={this.selectDataset.bind(this)}
